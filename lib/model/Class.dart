@@ -1,10 +1,8 @@
-class ChatData{
-  String time = '';
-  List<Map<String,String>> message_history = [];
-  String history = '';
-}
+import 'dart:convert';
+
 
 class Question{
+  int id = 0;
   String time = '';
   String description = '';
   String image = '';

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../AIrequest/request.dart';
 import '../../main.dart';
 
@@ -19,6 +16,8 @@ class _AIChat_pageState extends State<AIChat_page> {
   TextEditingController question = new TextEditingController();
   bool is_waiting = false;
   List<Map<String,String>> History = [];
+  int selectNum = 0;
+  bool is_show = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -276,5 +275,59 @@ class _waitingState extends State<waiting> with SingleTickerProviderStateMixin{
     );
   }
 }
+
+class SelectPage extends StatefulWidget {
+  VoidCallback select;
+  List<Object>HistoryList;
+  SelectPage({super.key,required this.HistoryList,required this.select});
+
+  @override
+  State<SelectPage> createState() => _SelectPageState();
+}
+
+class _SelectPageState extends State<SelectPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: Colors.black26,
+        ),
+        Row(
+          children: [
+            Container(
+              width: 200,
+              child:Column(
+                children: [
+                  Expanded(child: ListView.builder(
+                      itemCount: widget.HistoryList.length,
+                      itemBuilder: (context,index){
+                    return ListTile(
+                      title: GestureDetector(
+                        child: Container(
+                          child:Row(
+                            children: [
+                              Text("1")
+                            ],
+                          ),
+                        ),
+                        onTap: (){
+                          widget.select();
+                        },
+                      )
+                    );
+                  }))
+                ],
+              ),
+            )
+          ],
+        )
+      ],
+    );
+  }
+}
+
 
 

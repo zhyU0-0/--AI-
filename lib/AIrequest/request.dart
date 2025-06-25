@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:summer_assessment/model/DataBase.dart';
 
 import '../main.dart';
 
@@ -14,6 +15,7 @@ class AIService{
     try {
       // 添加用户的新消息到对话历史
       message_history = await getHistory();
+      List<Map<String, String>> old = await getHistory();
       message_history.add({
         'role': 'user',
         'content': prompt
@@ -59,7 +61,7 @@ class AIService{
           'role': 'assistant',
           'content':real_result
         });
-        saveHistory(message_history);
+        saveHistory(message_history,old);
         return assistantReply;
       } else {
 
@@ -84,15 +86,17 @@ class AIService{
     prefs.setString('my_History', '');
   }
 
-  saveHistory(List<Map<String,String>> list)async{
+  saveHistory(List<Map<String,String>> list,List<Map<String,String>> old_list)async{
     try {
       final prefs = await SharedPreferences.getInstance();
 
       // 将List<Map>转换为JSON字符串
+      String old_jsonString = jsonEncode(old_list);
       String jsonString = jsonEncode(list);
       logger.d("存History"+jsonString);
       // 存储到SharedPreferences
-      return await prefs.setString('my_History', jsonString);
+      DatabaseService.instance.AddHistory(old_jsonString, jsonString);
+      return (await DatabaseService.instance.getAllHistory())[0]["history"];
     } catch (e) {
       print('保存失败: $e');
       return false;
@@ -101,15 +105,15 @@ class AIService{
   Future<List<Map<String,String>>>getHistory()async{
 
     try {
+      logger.d("000");
       final prefs = await SharedPreferences.getInstance();
-
       // 从SharedPreferences获取JSON字符串
-      String? jsonString = prefs.getString('my_History');
-
+      String? jsonString = (await DatabaseService.instance.getAllHistory())[0]["history"];
+      logger.d("011"+jsonString.toString());
       if (jsonString == null || jsonString.isEmpty) {
         return [];
       }
-
+      logger.d("111");
       // 将JSON字符串转换为List<dynamic>
       List<dynamic> jsonList = jsonDecode(jsonString);
 
