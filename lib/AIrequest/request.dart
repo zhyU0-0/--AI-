@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
+import 'package:web_socket_channel/status.dart';
 
 import '../main.dart';
 
@@ -11,11 +13,20 @@ class AIService{
   static String chat_api = '/chat/completions';
   List<Map<String,String>> message_history = [];
 
-  Future<String> getChatCompletion(String prompt) async {
+  AIService(){
+    init();
+  }
+
+  init()async{
+    if((await DatabaseService.instance.getAllHistory()).length == 0){
+      DatabaseService.instance.insertHistory(jsonEncode([]));
+    }
+  }
+  Future<String> getChatCompletion(String prompt, int id) async {
     try {
       // 添加用户的新消息到对话历史
-      message_history = await getHistory();
-      List<Map<String, String>> old = await getHistory();
+      message_history = await getHistory(id);
+      List<Map<String, String>> old = await getHistory(id);
       message_history.add({
         'role': 'user',
         'content': prompt
@@ -61,7 +72,7 @@ class AIService{
           'role': 'assistant',
           'content':real_result
         });
-        saveHistory(message_history,old);
+        saveHistory(message_history,id);
         return assistantReply;
       } else {
 
@@ -81,34 +92,38 @@ class AIService{
   }
 
   clearConversation() async{
+    logger.d(message_history.length);
+    if(message_history.length != 0){
+      DatabaseService.instance.insertHistory(jsonEncode([]));
+    }
     message_history.clear();
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('my_History', '');
   }
 
-  saveHistory(List<Map<String,String>> list,List<Map<String,String>> old_list)async{
+  saveHistory(List<Map<String,String>> list,int id)async{
     try {
       final prefs = await SharedPreferences.getInstance();
 
       // 将List<Map>转换为JSON字符串
-      String old_jsonString = jsonEncode(old_list);
       String jsonString = jsonEncode(list);
-      logger.d("存History"+jsonString);
+      logger.d("存History"+id.toString()+jsonString);
       // 存储到SharedPreferences
-      DatabaseService.instance.AddHistory(old_jsonString, jsonString);
-      return (await DatabaseService.instance.getAllHistory())[0]["history"];
+      logger.d("111");
+      DatabaseService.instance.AddHistory(id+1,jsonString);
+      return (await DatabaseService.instance.getAllHistory())[id]["history"];
     } catch (e) {
       print('保存失败: $e');
       return false;
     }
   }
-  Future<List<Map<String,String>>>getHistory()async{
+  Future<List<Map<String,String>>>getHistory(int id)async{
 
     try {
-      logger.d("000");
+      logger.d("000${id}");
       final prefs = await SharedPreferences.getInstance();
       // 从SharedPreferences获取JSON字符串
-      String? jsonString = (await DatabaseService.instance.getAllHistory())[0]["history"];
+      String? jsonString = (await DatabaseService.instance.getAllHistory())[id]["history"];
       logger.d("011"+jsonString.toString());
       if (jsonString == null || jsonString.isEmpty) {
         return [];
@@ -117,9 +132,10 @@ class AIService{
       // 将JSON字符串转换为List<dynamic>
       List<dynamic> jsonList = jsonDecode(jsonString);
 
+
       // 转换为List<Map<String, String>>
       List<Map<String,String>> result = jsonList.map((item) => Map<String, String>.from(item)).toList();
-      logger.d("取History"+result.toString());
+      logger.d("取History"+id.toString()+result.toString());
       return result;
     } catch (e) {
       print('读取失败: $e');

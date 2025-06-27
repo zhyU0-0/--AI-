@@ -1,8 +1,18 @@
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+// 全局Java版本配置（Kotlin DSL写法）
+subprojects {
+    tasks.withType<JavaCompile>().configureEach {
+        sourceCompatibility = JavaVersion.VERSION_11.toString()
+        targetCompatibility = JavaVersion.VERSION_11.toString()
+        options.release.set(11)
+        options.compilerArgs.add("-Xlint:-options")
+    }
 }
 
 android {

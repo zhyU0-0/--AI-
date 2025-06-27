@@ -1,13 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:summer_assessment/model/DataBase.dart';
 import '../../AIrequest/request.dart';
 import '../../main.dart';
-
+int selectNum = 0;
 AIService deepseek = new AIService();
 List<String> node_l = ["1",'2'];
 class AIChat_page extends StatefulWidget {
   const AIChat_page({super.key});
-
   @override
   State<AIChat_page> createState() => _AIChat_pageState();
 }
@@ -16,14 +18,15 @@ class _AIChat_pageState extends State<AIChat_page> {
   TextEditingController question = new TextEditingController();
   bool is_waiting = false;
   List<Map<String,String>> History = [];
-  int selectNum = 0;
   bool is_show = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    deepseek.getHistory().then((r){
-      History = r;
+    deepseek.getHistory(selectNum).then((r){
+      setState(() {
+        History = r;
+      });
     });
   }
   chat()async{
@@ -34,8 +37,8 @@ class _AIChat_pageState extends State<AIChat_page> {
         is_waiting = true;
       });
       logger.d(question.text);
-      await deepseek.getChatCompletion(question.text);
-      await deepseek.getHistory().then((r){
+      await deepseek.getChatCompletion(question.text,selectNum);
+      await deepseek.getHistory(selectNum).then((r){
         setState(() {
           question.text = '';
           History = r;
@@ -53,62 +56,102 @@ class _AIChat_pageState extends State<AIChat_page> {
     }
   }
   clean()async{
+    logger.d("History.length   "+History.length.toString());
+    /*if(History.length != 0){
+      DatabaseService.instance.insertHistory(jsonEncode([]));
+    }
+    if((await DatabaseService.instance.getAllHistory())==0)
+    {
+      DatabaseService.instance.insertHistory(jsonEncode([]));
+    }*/
+    //DatabaseService.instance.insertHistory(jsonEncode([]));
+
+    if(History.length != 0){
+      selectNum = (await DatabaseService.instance.getAllHistory()).length;
+    }
     await deepseek.clearConversation();
-    await deepseek.getHistory().then((r){
+    await deepseek.getHistory(selectNum).then((r){
       setState(() {
         History = r;
       });
     });
-    logger.d("clean history::"+History.toString());
+    logger.d("clean history::"+selectNum.toString()+History.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      alignment: Alignment.center,
-      child: Column(
-        children: [
-          SizedBox(height: 10,),
-          Container(width: double.infinity,height: 50,
-          padding: EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      children: [
+        Container(
+          color: Colors.white,
+          alignment: Alignment.center,
+          child: Column(
             children: [
               SizedBox(height: 10,),
-            Text("DeepSeek",style: TextStyle(fontSize: 20),),
-            ElevatedButton(onPressed: (){clean();}, child: Text("新对话"))
-          ],),),
-          Expanded(child: Chat_List(
-          History: History,
-          )),
-          Container(width: double.infinity,height: 50,
-              alignment: Alignment.center,
-            padding: EdgeInsets.only(left: 10,right: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-              Expanded(
-              child: TextField(controller: question,decoration:InputDecoration(
-                border: OutlineInputBorder()
-              ),),),
-              if(is_waiting)
-                Container(
-                  width: 50,
-                  height: 50,
-                  child: ElevatedButton(onPressed:(){
-                    Get.snackbar("writ", "正在思考中，请耐心等待",backgroundColor: Colors.green);
-                  } , child: Container(
-                    width: 160,
-                    child: Text("等待"),
-                  ))
-                  ),
-              if(!is_waiting)
-                ElevatedButton(onPressed:(){chat();} , child: Text("chat")),
-            ],)
+              Container(width: double.infinity,height: 50,
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(onPressed: (){
+                      setState(() {
+                        is_show = true;
+                      });
+                    }, child: Text("H")),
+                    Text("DeepSeek",style: TextStyle(fontSize: 20),),
+                    ElevatedButton(onPressed: (){clean();}, child: Text("新对话"))
+                  ],),),
+              Expanded(child: Chat_List(
+                History: History,
+              )),
+              Container(width: double.infinity,height: 50,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(left: 10,right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(onPressed: (){
+                        //开始记录音频
+
+                        //音频发送，获取文本
+
+                        setState(() {
+                          question.text = "";
+                        });
+                      }, child: Text("语音")),
+                      Expanded(
+                        child: TextField(controller: question,decoration:InputDecoration(
+                            border: OutlineInputBorder()
+                        ),),),
+                      if(is_waiting)
+                        Container(
+                            width: 50,
+                            height: 50,
+                            child: ElevatedButton(onPressed:(){
+                              Get.snackbar("writ", "正在思考中，请耐心等待",backgroundColor: Colors.green);
+                            } , child: Container(
+                              width: 160,
+                              child: Text("等待"),
+                            ))
+                        ),
+                      if(!is_waiting)
+                        ElevatedButton(onPressed:(){chat();} , child: Text("chat")),
+                    ],)
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        if(is_show)
+          SelectPage( select: (){
+            deepseek.getHistory(selectNum).then((r){
+              setState(() {
+                History = r;
+                is_show = false;
+              });
+            });
+
+          })
+      ],
     );
   }
 }
@@ -202,12 +245,10 @@ class _Chat_ListState extends State<Chat_List> {
   }
 
   init()async{
-    var a = await deepseek.getHistory();
+    var a = await deepseek.getHistory(selectNum);
     setState(() {
       chatHistory = a;
     });
-    logger.d(chatHistory);
-    logger.d(chatHistory[0]["content"].toString());
   }
   @override
   void didUpdateWidget(covariant Chat_List oldWidget) {
@@ -278,42 +319,67 @@ class _waitingState extends State<waiting> with SingleTickerProviderStateMixin{
 
 class SelectPage extends StatefulWidget {
   VoidCallback select;
-  List<Object>HistoryList;
-  SelectPage({super.key,required this.HistoryList,required this.select});
+  SelectPage({super.key,required this.select});
 
   @override
   State<SelectPage> createState() => _SelectPageState();
 }
 
 class _SelectPageState extends State<SelectPage> {
+  List<Map<String, dynamic>> hList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    init();
+  }
+  init()async{
+    List<Map<String, dynamic>> a = await DatabaseService.instance.getAllHistory();
+    setState(() {
+      hList = a;
+    });
+    logger.d(a.length);
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.black26,
+        GestureDetector(
+          child: Container(
+            width: 600,
+            height: 800,
+            color: Colors.black26,
+          ),
+          onTap: widget.select,
         ),
         Row(
           children: [
             Container(
+              decoration: BoxDecoration(
+                color: Colors.white
+              ),
               width: 200,
               child:Column(
                 children: [
                   Expanded(child: ListView.builder(
-                      itemCount: widget.HistoryList.length,
+                      itemCount: hList.length,
                       itemBuilder: (context,index){
                     return ListTile(
                       title: GestureDetector(
                         child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey
+                          ),
                           child:Row(
                             children: [
-                              Text("1")
+                              Text(index.toString())
                             ],
                           ),
                         ),
                         onTap: (){
+                          logger.d(":::"+selectNum.toString());
+                          selectNum = index;
                           widget.select();
                         },
                       )

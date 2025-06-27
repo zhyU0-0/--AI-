@@ -15,9 +15,7 @@ class DatabaseService {
     if(_database != null)return _database!;
     _database = await _initDB('node.db');
 
-    if((await DatabaseService.instance.getAllHistory()).length == 0){
-      DatabaseService.instance.insertHistory(jsonEncode([]));
-    }
+
     return _database!;
   }
 
@@ -45,6 +43,7 @@ class DatabaseService {
     return await db.insert("photos", row);
   }
   Future<int> insertHistory(String history) async {
+    logger.d("insert::");
     final db = await instance.database;
     DateTime now = DateTime.now();
     return await db.insert("histories", {"history":history});
@@ -83,14 +82,15 @@ class DatabaseService {
     );
   }
 
-  Future<int> AddHistory(String oldH,String newH) async {
-    logger.d(oldH+"   "+newH);
+  Future<int> AddHistory(int id,String newH) async {
+    logger.d("00");
     final db = await instance.database;
+    logger.d("11  id::"+id.toString());
     return await db.update(
       "histories",
       {"history":newH},
-      where: 'history = ?',
-      whereArgs: [oldH],
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 
