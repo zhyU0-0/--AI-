@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:summer_assessment/model/DataBase.dart';
 
 // 发送邮箱验证码
 int SendWaitTime = 10;
@@ -23,10 +24,17 @@ class Land extends StatefulWidget {
 class _LandState extends State<Land> {
   TextEditingController pass_word = new TextEditingController();
   TextEditingController user_name = new TextEditingController();
+  bool is_auth = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+   init();
+  }
+  init()async{
+    final prefs = await SharedPreferences.getInstance();
+    var a = await prefs.getBool("is_land");
+    if(a == true){Get.toNamed("/home");}
   }
 
   @override
@@ -57,7 +65,7 @@ class _LandState extends State<Land> {
                   width: double.infinity,
                   child: TextField(controller: user_name,
                   decoration: InputDecoration(
-                      label: Text("email".tr),
+                      label: Text("username".tr),
                       border: OutlineInputBorder()
                   ),
                 ),
@@ -74,6 +82,11 @@ class _LandState extends State<Land> {
                   ),
                 ),
                 ),
+                Checkbox(value: is_auth, onChanged: (bool? value) {
+                  setState(() {
+                    is_auth = !is_auth;
+                  });
+                },),
                 SizedBox(height: 10,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -122,22 +135,26 @@ class _LandState extends State<Land> {
   }
   land()async{
     final prefs = await SharedPreferences.getInstance();
-
-    var ip = prefs.getString("ip");
-    logger.d(ip);
-    final response = await http.post(
-      Uri.parse('$ip/land'),
-      body: jsonEncode({"email":user_name.text,'password':pass_word.text }),
-      headers: {'Content-Type': 'application/json'},
-    );
-    logger.d(response.statusCode);
-    if(response.statusCode == 200){
-      prefs.setBool("is_land", true);
-      prefs.setString("user_email", user_name.text);
-      Get.snackbar("登陆成功", "登陆成功");
-      Get.toNamed("/");
+    //var username = await prefs.getString("user_name");
+    var password = await DatabaseService.instance.getPassword(user_name.text);
+    logger.d(password + pass_word.text);
+    if(password == pass_word.text){
+      if(is_auth){
+        prefs.setBool("is_land", true);
+      }
+      prefs.setString("user_name", user_name.text);
+      Get.showSnackbar(GetSnackBar(
+        message:"登陆成功,登陆成功",
+        duration: Duration(seconds: 1),
+        backgroundColor: Colors.green,
+      ));
+      Get.toNamed("/home");
     }else {
-      Get.snackbar("登陆失败", "邮箱或密码错误");
+      Get.showSnackbar(GetSnackBar(
+          message:"登陆失败，或密码错误",
+        duration: Duration(seconds: 1),
+        backgroundColor: Colors.green,
+      ));
     }
   }
 

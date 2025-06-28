@@ -6,6 +6,7 @@ import 'package:path/path.dart' as language;
 import 'package:summer_assessment/pages/Tab/AIChat.dart';
 import 'package:summer_assessment/pages/Tab/Questions.dart';
 import 'package:summer_assessment/pages/Tab/User.dart';
+import 'package:summer_assessment/pages/land.dart';
 import 'package:summer_assessment/routers/routers.dart';
 
 void main() {
@@ -19,19 +20,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-
+    debugShowCheckedModeBanner: false,
     initialRoute: "/",
     defaultTransition: Transition.rightToLeftWithFade,
     getPages: AppPage.routers,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: Land(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -54,10 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
       body: Center(
         child: Pages[selectedNum]
       ),

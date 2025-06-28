@@ -12,15 +12,11 @@ class AIService{
   static String Api_Url = 'https://api.deepseek.com/v1';
   static String chat_api = '/chat/completions';
   List<Map<String,String>> message_history = [];
-
   AIService(){
     init();
   }
-
   init()async{
-    if((await DatabaseService.instance.getAllHistory()).length == 0){
-      DatabaseService.instance.insertHistory(jsonEncode([]));
-    }
+
   }
   Future<String> getChatCompletion(String prompt, int id) async {
     try {
@@ -93,25 +89,27 @@ class AIService{
 
   clearConversation() async{
     logger.d(message_history.length);
+    final prefs = await SharedPreferences.getInstance();
+    var username = await prefs.getString("user_name");
+    var len = (await DatabaseService.instance.getAllHistory(username.toString())).length;
     if(message_history.length != 0){
-      DatabaseService.instance.insertHistory(jsonEncode([]));
+      print("insert");
+      DatabaseService.instance.insertHistory(jsonEncode([]),username.toString(),(len+1).toString());
     }
     message_history.clear();
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('my_History', '');
   }
 
   saveHistory(List<Map<String,String>> list,int id)async{
     try {
       final prefs = await SharedPreferences.getInstance();
-
+      var username = await prefs.getString("user_name");
       // 将List<Map>转换为JSON字符串
       String jsonString = jsonEncode(list);
       logger.d("存History"+id.toString()+jsonString);
       // 存储到SharedPreferences
       logger.d("111");
-      DatabaseService.instance.AddHistory(id+1,jsonString);
-      return (await DatabaseService.instance.getAllHistory())[id]["history"];
+      DatabaseService.instance.AddHistory(id+1,username.toString(),jsonString);
+      return (await DatabaseService.instance.getAllHistory(username.toString()))[id]["history"];
     } catch (e) {
       print('保存失败: $e');
       return false;
@@ -122,18 +120,12 @@ class AIService{
     try {
       logger.d("000${id}");
       final prefs = await SharedPreferences.getInstance();
-      // 从SharedPreferences获取JSON字符串
-      String? jsonString = (await DatabaseService.instance.getAllHistory())[id]["history"];
-      logger.d("011"+jsonString.toString());
+      var username = await prefs.getString("user_name");
+      String? jsonString = (await DatabaseService.instance.getAllHistory(username.toString()))[id]["history"];
       if (jsonString == null || jsonString.isEmpty) {
         return [];
       }
-      logger.d("111");
-      // 将JSON字符串转换为List<dynamic>
       List<dynamic> jsonList = jsonDecode(jsonString);
-
-
-      // 转换为List<Map<String, String>>
       List<Map<String,String>> result = jsonList.map((item) => Map<String, String>.from(item)).toList();
       logger.d("取History"+id.toString()+result.toString());
       return result;
@@ -141,6 +133,7 @@ class AIService{
       print('读取失败: $e');
       return [];
     }
+
   }
 
 }

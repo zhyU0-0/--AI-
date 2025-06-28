@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:summer_assessment/model/DataBase.dart';
 
 // 发送邮箱验证码
 int SendWaitTime = 10;
@@ -129,54 +130,6 @@ class _LandState extends State<Register> {
                   ),
                   SizedBox(height: 10,),
                   Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 20),
-                          height: 40,
-                          width: 200,
-                          child:TextField(controller: code,),
-                        ),
-                        GestureDetector(
-                            onTap: (){
-                              if(is_send){
-                                Get.showSnackbar(GetSnackBar(
-                                  title: "正在发送验证码",
-                                  backgroundColor: Colors.green,
-                                  message: "正在发送验证码",
-                                  duration: Duration(seconds: 2),
-                                ));
-                              }else{
-                                if(email.text.isNotEmpty){
-                                  sendCode(email.text);
-                                }else{
-                                  Get.showSnackbar(GetSnackBar(
-                                    title: "请输入正确邮箱",
-                                    backgroundColor: Colors.green,
-                                    message: "请输入正确邮箱",
-                                    duration: Duration(seconds: 2),
-                                  ));
-                                }
-                              }
-                            },
-                            child: Container(
-                              width: 140,
-                              height: 40,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: Colors.black26,
-                                      width: 2,
-                                      style: BorderStyle.solid
-                                  )
-                              ),
-                              child: is_send?Text("验证码已发送"+(10-periodicSeconds).toString()):Text("获取验证码"),
-                            ))
-                      ]
-                  ),
-                  SizedBox(height: 10,),
-                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(onPressed: (){Get.back();},
@@ -227,7 +180,29 @@ class _LandState extends State<Register> {
   }
 
   insert_user()async{
-    await verifyCode(email.text,code.text);
+
+    int a = await DatabaseService.instance.insertUser(
+        user_name.text,
+        pass_word.text,
+        image.text,
+        email.text
+    );
+    if(a == -1){
+      Get.showSnackbar(GetSnackBar(
+        backgroundColor: Color(0xff935757),
+        message: "用户名已存在",
+        duration: Duration(seconds: 1),
+      ));
+
+    }else{
+      Get.showSnackbar(GetSnackBar(
+        backgroundColor: Colors.green,
+        message: "注册成功",
+        duration: Duration(seconds: 1),
+      ));
+      Get.toNamed("/land");
+    }
+    /*await verifyCode(email.text,code.text);
     if(is_success){
       final prefs = await SharedPreferences.getInstance();
       var ip = prefs.getString("ip");
@@ -251,66 +226,7 @@ class _LandState extends State<Register> {
         Get.snackbar("错误", "注册失败");
       }
     }
-    else{Get.snackbar("错误", "注册失败");}
-  }
-
-  Future<void> sendCode(String email) async {
-    setState(() {
-      periodicSeconds = 0;
-      is_send = true;
-    });
-    start();
-    final prefs = await SharedPreferences.getInstance();
-    var ip = prefs.getString("ip");
-    final response = await http.post(
-      Uri.parse('$ip/send-code'),
-      body: jsonEncode({'email': email}),
-      headers: {'Content-Type': 'application/json'},
-    );
-    print(response.statusCode);
-    prefs.setInt("send_time", 10);
-  }
-  int periodicSeconds = 0;
-  Timer? periodicTimer;
-
-  void start() {
-    periodicTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if(periodicSeconds == SendWaitTime){
-        setState(() {
-          is_send = false;
-        });
-        return;
-      }
-      setState(() {
-        periodicSeconds++;
-      });
-    });
-  }
-// 验证验证码
-  Future<void> verifyCode(String email, String code) async {
-    final prefs = await SharedPreferences.getInstance();
-    var ip = prefs.getString("ip");
-    final response = await http.post(
-      Uri.parse('$ip/verify-code'),
-      body: jsonEncode({'email': email, 'code': code}),
-      headers: {'Content-Type': 'application/json'},
-    );
-    //print(response.body);
-    print(response.statusCode);
-    if(response.statusCode==200){
-      Get.snackbar("验证成功",'验证成功');
-      is_success = true;
-    }else{
-      if(response.statusCode==401){
-        print(response.statusCode);
-        Get.snackbar("邮箱已注册",'邮箱已注册，请更换邮箱');
-        is_success = false;
-      }else{
-        Get.snackbar("验证码错误",'验证码错误');
-        is_success = false;
-      }
-    }
-    Get.snackbar("code", response.body);
+    else{Get.snackbar("错误", "注册失败");}*/
   }
 }
 ///politeness

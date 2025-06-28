@@ -28,8 +28,25 @@ class DatabaseService {
         version: 6,
         onCreate: (db,version){
           return Future.wait([
-            db.execute("CREATE TABLE photos(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT,file_path TEXT NOT NULL,created_at TEXT NOT NULL,is_favorite INTEGER DEFAULT 0)"),
-            db.execute("CREATE TABLE histories(id INTEGER PRIMARY KEY AUTOINCREMENT, history TEXT)"),
+            db.execute("CREATE TABLE users("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "name TEXT NOT NULL UNIQUE,"
+                "email TEXT NOT NULL,"
+                "password TEXT NOT NULL,"
+                "image TEXT NOT NULL"
+                ")"),
+            db.execute("CREATE TABLE photos("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "title TEXT,file_path TEXT NOT NULL,"
+                "created_at TEXT NOT NULL,"
+                "is_favorite INTEGER DEFAULT 0,"
+                "discription TEXT"
+                ")"),
+            db.execute("CREATE TABLE histories("
+                "id TEXT NOT NULL, "
+                "name TEXT NOT NULL,"
+                "history TEXT"
+                ")"),
           ]);
         }
     );
@@ -42,27 +59,51 @@ class DatabaseService {
     final db = await instance.database;
     return await db.insert("photos", row);
   }
-  Future<int> insertHistory(String history) async {
+  Future<int> insertHistory(String history,String name,String id) async {
     logger.d("insert::");
     final db = await instance.database;
     DateTime now = DateTime.now();
-    return await db.insert("histories", {"history":history});
+    return await db.insert("histories", {"id":id,"history":history,"name":name});
   }
-
+  Future<int> insertUser(String name,String password,String image,String email) async {
+    final db = await instance.database;
+    try{
+      return await db.insert("users", {
+        "name":name,
+        "password":password,
+        "email":email,
+        "image":image
+      });
+    }catch(e){
+      return -1;
+    }
+  }
   // 获取所有照片
   Future<List<Map<String, dynamic>>> getAllPhotos() async {
     final db = await instance.database;
     return await db.query("photos", orderBy: 'created_at DESC');
   }
 
-  Future<List<Map<String,dynamic>>> getAllHistory() async {
+  Future<List<Map<String,dynamic>>> getAllHistory(String name) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
       "histories",
+      where: "name = ?",
+      whereArgs: [name]
     );
     return maps;
   }
 
+  Future<String> getPassword(String name) async{
+    final db = await instance.database;
+    final List<Map<String,Object?>> result = await db.query(
+      "users",
+      whereArgs: [name],
+      where: "name = ?"
+    );
+    logger.d(result);
+    return result[0]["password"].toString();
+  }
   // 删除照片
   Future<int> deletePhoto(int id) async {
     final db = await instance.database;
@@ -82,15 +123,15 @@ class DatabaseService {
     );
   }
 
-  Future<int> AddHistory(int id,String newH) async {
+  Future<int> AddHistory(int id,String name,String newH) async {
     logger.d("00");
     final db = await instance.database;
     logger.d("11  id::"+id.toString());
     return await db.update(
       "histories",
       {"history":newH},
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND name = ?',
+      whereArgs: [id,name],
     );
   }
 

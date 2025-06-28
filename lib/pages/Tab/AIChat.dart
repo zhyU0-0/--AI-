@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
 import '../../AIrequest/TranslateAudio.dart';
 import '../../AIrequest/request.dart';
@@ -29,8 +30,13 @@ class _AIChat_pageState extends State<AIChat_page> {
   void dispose() {
     _recorder.dispose();
     super.dispose();
+    logger.d("is dispose   "+selectNum.toString());
   }
-
+  dis()async{
+    final prefs = await SharedPreferences.getInstance();
+    var username = await prefs.getString("user_name");
+    prefs.setInt(username.toString(), selectNum);
+  }
   Future<void> _startRecording() async {
     setState(() {
       _isRecording = true;
@@ -71,15 +77,29 @@ class _AIChat_pageState extends State<AIChat_page> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    init();
+  }
+  init()async{
+    final prefs = await SharedPreferences.getInstance();
+    var username = prefs.getString("user_name");
+
+    if((await DatabaseService.instance.getAllHistory(username.toString())).length == 0){
+      DatabaseService.instance.insertHistory(jsonEncode([]),username.toString(),"1");
+    }
+
+    selectNum = prefs.getInt(username.toString()) ?? 0 ;
+    logger.d(selectNum.toString()+":::"+username.toString());
+
     deepseek.getHistory(selectNum).then((r){
       setState(() {
         History = r;
       });
+      deepseek.message_history = r;
     });
+
+    logger.d("is init   "+selectNum.toString());
   }
   chat()async{
-
-    logger.d("chat history::"+History.toString());
     if(question.text.isNotEmpty){
       setState(() {
         is_waiting = true;
@@ -105,8 +125,10 @@ class _AIChat_pageState extends State<AIChat_page> {
   }
   clean()async{
     logger.d("History.length   "+History.length.toString());
+    final prefs = await SharedPreferences.getInstance();
+    var username = await prefs.getString("user_name");
     if(History.length != 0){
-      selectNum = (await DatabaseService.instance.getAllHistory()).length;
+      selectNum = (await DatabaseService.instance.getAllHistory(username.toString())).length;
     }
     await deepseek.clearConversation();
     await deepseek.getHistory(selectNum).then((r){
@@ -306,12 +328,23 @@ class _Chat_ListState extends State<Chat_List> {
     // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
     if(widget.History != oldWidget.History){
-      logger.d("is update");
       setState(() {
         chatHistory = widget.History;
       });
     }
   }
+
+  String formatText(String originalText) {
+    // 先将连续的多个换行符（比如 \n\n 等）替换为单个换行符，再去掉可能多余的首尾换行
+    String text = originalText.replaceAll(RegExp(r'\n+'), '\n').trim();
+    // 按照换行符分割成段落列表
+    List<String> paragraphs = text.split('\n');
+    // 对每个段落进行简单处理（这里可根据实际需求扩展，比如去除多余空格等，示例中只是去掉首尾空格）
+    List<String> formattedParagraphs = paragraphs.map((para) => para.trim()).toList();
+    // 再用换行符将段落重新拼接起来，形成规整的排版
+    return formattedParagraphs.join('\n\n');
+  }
+
 }
 
 
@@ -386,7 +419,9 @@ class _SelectPageState extends State<SelectPage> {
     init();
   }
   init()async{
-    List<Map<String, dynamic>> a = await DatabaseService.instance.getAllHistory();
+    final prefs = await SharedPreferences.getInstance();
+    var username = await prefs.getString("user_name");
+    List<Map<String, dynamic>> a = await DatabaseService.instance.getAllHistory(username.toString());
     setState(() {
       hList = a;
     });
@@ -424,7 +459,7 @@ class _SelectPageState extends State<SelectPage> {
                           ),
                           child:Row(
                             children: [
-                              Text(index.toString())
+                              Text(index.toString() + getTitle(hList[index]))
                             ],
                           ),
                         ),
@@ -443,6 +478,14 @@ class _SelectPageState extends State<SelectPage> {
         )
       ],
     );
+  }
+  String getTitle(Map<String, dynamic> value){
+    try{
+      return (jsonDecode((value["history"]).toString()).map((item) => Map<String, String>.from(item)).toList())[0]["content"];
+    }catch(e){
+      return "新对话";
+    }
+
   }
 }
 

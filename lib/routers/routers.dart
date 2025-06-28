@@ -9,7 +9,7 @@ import '../pages/register.dart';
 
 class AppPage{
   static final routers = [
-    GetPage(name: "/", page: () => MyApp()),
+    GetPage(name: "/home", page: () => MyHomePage()),
     GetPage(name: "/land", page: () => Land()),
     GetPage(name: "/register", page: () => Register()),
     GetPage(name: "/DetailPage", page: () => DetailPage()),

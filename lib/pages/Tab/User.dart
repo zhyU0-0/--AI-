@@ -204,6 +204,7 @@ class _User_pageState extends State<User_page> {
               onPressed: () {
                 exit();
                 Navigator.of(context).pop();
+
                 Get.toNamed("/land");
               },
               child: Text('确认'),
@@ -217,6 +218,7 @@ class _User_pageState extends State<User_page> {
     final prefs = await SharedPreferences.getInstance();
    await prefs.setBool("is_land",false);
     await prefs.setString("user_email",'');
+    await prefs.setBool("is_auth",false);
   }
 }
 class UserLanding extends StatefulWidget {
