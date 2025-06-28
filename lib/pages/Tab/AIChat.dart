@@ -293,21 +293,28 @@ class _Chat_ListState extends State<Chat_List> {
                     ],
                   ),
                   SizedBox(width: 10,),
-                  Column(
-                    children: [
-                      Container(
-                        padding:EdgeInsets.all(10),
-                        height:chatHistory[index]['content']!.length*2+0.1>80?chatHistory[index]['content']!.length*2+15.1:80,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color:Color(0x5EAEAEAE),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        width: 250,
-                        child: Expanded(child: Text(chatHistory[index]["content"].toString())),
-                      ),
-                    ],
-                  )
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color:Color(0x5EAEAEAE),
+                    ),
+                    padding: EdgeInsets.only(left: 10,right: 10),
+                    width: 250,
+                    child: Column(
+                      children: [
+                        Expanded(child: Container(
+                          alignment: Alignment.centerLeft,
+                          child:RichText(
+                              text: TextSpan(
+                                style: TextStyle(fontSize: 16),
+                                children: parseMarkdownText(formatText(chatHistory[index]["content"].toString())),
+                              )
+                          )
+                        ),),
+                      ],
+                    ),
+                  ),
+
                 ],
               ),
             ),
@@ -336,15 +343,48 @@ class _Chat_ListState extends State<Chat_List> {
 
   String formatText(String originalText) {
     // 先将连续的多个换行符（比如 \n\n 等）替换为单个换行符，再去掉可能多余的首尾换行
-    String text = originalText.replaceAll(RegExp(r'\n+'), '\n').trim();
-    // 按照换行符分割成段落列表
-    List<String> paragraphs = text.split('\n');
-    // 对每个段落进行简单处理（这里可根据实际需求扩展，比如去除多余空格等，示例中只是去掉首尾空格）
-    List<String> formattedParagraphs = paragraphs.map((para) => para.trim()).toList();
-    // 再用换行符将段落重新拼接起来，形成规整的排版
-    return formattedParagraphs.join('\n\n');
+    return originalText
+        .replaceAll(r'\n', '\n')    // 将 "\n" 转换为实际换行符
+        .replaceAll(r'\\n', r'\n'); // 处理可能的双反斜杠转义
   }
+  List<TextSpan> parseMarkdownText(String text) {
+    final List<TextSpan> spans = [];
+    final RegExp boldRegex = RegExp(r'\*\*(.*?)\*\*');
 
+    int start = 0;
+    for (Match match in boldRegex.allMatches(text)) {
+      // 添加普通文本
+      spans.add(TextSpan(
+        text: text.substring(start, match.start),
+        style: TextStyle(
+            color: Colors.black
+        )
+      ));
+
+      // 添加加粗文本
+      spans.add(TextSpan(
+        text: match.group(1)!,
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+          color: Colors.black
+        ),
+      ));
+
+      start = match.end;
+    }
+
+    // 添加剩余文本
+    if (start < text.length) {
+      spans.add(TextSpan(
+          text: text.substring(start),
+        style: TextStyle(
+            color: Colors.black
+        )
+      ));
+    }
+
+    return spans;
+  }
 }
 
 
@@ -454,12 +494,21 @@ class _SelectPageState extends State<SelectPage> {
                     return ListTile(
                       title: GestureDetector(
                         child: Container(
+                          padding: EdgeInsets.all(10),
+                          height: 50,
                           decoration: BoxDecoration(
-                            color: Colors.grey
+                            color: selectNum == index?Colors.blue: Colors.grey,
+                            borderRadius: BorderRadius.circular(10)
                           ),
                           child:Row(
                             children: [
-                              Text(index.toString() + getTitle(hList[index]))
+                              Expanded(child: Text(
+                                getTitle(hList[index]),
+                                maxLines: 1,           // 限制为单行
+                                overflow: TextOverflow.ellipsis,
+                              )
+                              )
+
                             ],
                           ),
                         ),
