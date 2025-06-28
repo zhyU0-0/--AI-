@@ -1,19 +1,13 @@
 import 'dart:async';
-
 import 'package:crypto/crypto.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
-
-import '../main.dart';
 import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:crypto/crypto.dart';
-import 'package:http/http.dart' as http;
+
 
 
 //听写识别
@@ -123,16 +117,13 @@ class AudioTranslate {
     return completer.future;
   }
 
-  // 发送音频数据（分帧处理）
+  //分帧
   Future<void> _sendAudioData(WebSocketChannel channel) async {
-    const frameSize = 8000; // 每帧大小（字节）
-    const interval = Duration(milliseconds: 40); // 发送间隔
+    const frameSize = 8000; // 帧大小
+    const interval = Duration(milliseconds: 40); // 间隔
 
-    // Base64解码获取原始字节
     final audioBytes = base64.decode(Audio);
     int status = STATUS_FIRST_FRAME;
-
-    print(11);
 
     for (var i = 0; i < audioBytes.length; i += frameSize) {
       final end = min(i + frameSize, audioBytes.length);
@@ -148,10 +139,9 @@ class AudioTranslate {
           "encoding": "raw"
         }
       };
-      print(22);
+
       channel.sink.add(json.encode(data));
 
-      // 更新状态
       if (status == STATUS_FIRST_FRAME) {
         status = STATUS_CONTINUE_FRAME;
       }
@@ -159,7 +149,6 @@ class AudioTranslate {
       await Future.delayed(interval);
     }
 
-    // 发送结束帧
     channel.sink.add(json.encode({
       "data": {
         "status": STATUS_LAST_FRAME,
@@ -192,9 +181,9 @@ class AudioRecorder {
 
     await _record.start(
       path: path,
-      encoder: AudioEncoder.wav,  // 明确使用WAV格式
-      bitRate: 128000,            // 128kbps
-      samplingRate: 16000,        // 16kHz（讯飞API要求）
+      encoder: AudioEncoder.wav,
+      bitRate: 128000,
+      samplingRate: 16000,
     );
 
     return path;

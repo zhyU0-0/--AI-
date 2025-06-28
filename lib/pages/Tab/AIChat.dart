@@ -25,6 +25,7 @@ class _AIChat_pageState extends State<AIChat_page> {
   final AudioTranslate _translator = AudioTranslate();
   bool _isRecording = false;
   String _result = '语言';
+  int style = 0;
 
   @override
   void dispose() {
@@ -105,7 +106,7 @@ class _AIChat_pageState extends State<AIChat_page> {
         is_waiting = true;
       });
       logger.d(question.text);
-      await deepseek.getChatCompletion(question.text,selectNum);
+      await deepseek.getChatCompletion(question.text,selectNum,style);
       await deepseek.getHistory(selectNum).then((r){
         setState(() {
           question.text = '';
@@ -165,6 +166,51 @@ class _AIChat_pageState extends State<AIChat_page> {
               Expanded(child: Chat_List(
                 History: History,
               )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Row(
+                    children: [
+                      Text("正常"),
+                      Checkbox(value: style == 0, onChanged: (r){
+                        setState(() {
+                          style = 0;
+                        });
+                      })
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text("冷漠"),
+                      Checkbox(value: style == 1, onChanged: (r){
+                        setState(() {
+                          style = 1;
+                        });
+                      })
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text("热情"),
+                      Checkbox(value: style == 2, onChanged: (r){
+                        setState(() {
+                          style = 2;
+                        });
+                      })
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text("认真"),
+                      Checkbox(value: style == 3, onChanged: (r){
+                        setState(() {
+                          style = 3;
+                        });
+                      })
+                    ],
+                  ),
+                ],
+              ),
               Container(width: double.infinity,height: 50,
                   alignment: Alignment.center,
                   padding: EdgeInsets.only(left: 10,right: 10),
@@ -212,6 +258,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                         ElevatedButton(onPressed:(){chat();} , child: Text("chat")),
                     ],)
               ),
+
             ],
           ),
         ),
@@ -497,8 +544,12 @@ class _SelectPageState extends State<SelectPage> {
                           padding: EdgeInsets.all(10),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: selectNum == index?Colors.blue: Colors.grey,
-                            borderRadius: BorderRadius.circular(10)
+                            color: selectNum == index?Colors.blue: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                width: selectNum == index?0:2,
+                                color: Colors.black26
+                            )
                           ),
                           child:Row(
                             children: [

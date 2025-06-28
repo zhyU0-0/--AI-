@@ -1,10 +1,7 @@
 import 'dart:convert';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
-import 'package:web_socket_channel/status.dart';
-
 import '../main.dart';
 
 class AIService{
@@ -18,16 +15,15 @@ class AIService{
   init()async{
 
   }
-  Future<String> getChatCompletion(String prompt, int id) async {
+  Future<String> getChatCompletion(String prompt, int id, int style) async {
     try {
       // 添加用户的新消息到对话历史
       message_history = await getHistory(id);
-      List<Map<String, String>> old = await getHistory(id);
       message_history.add({
         'role': 'user',
-        'content': prompt
+        'content': getStyle(style)+prompt
       });
-
+      logger.d(message_history);
       final response = await http.post(
         Uri.parse(Api_Url+chat_api),
         headers: {
@@ -62,7 +58,11 @@ class AIService{
         logger.d("解析后：："+real_result);
         final data = jsonDecode(response.body);
         final assistantReply = data['choices'][0]['message']['content'];
-
+        message_history.removeLast();
+        message_history.add({
+          'role': 'user',
+          'content': prompt
+        });
         // 添加AI的回复到对话历史
         message_history.add({
           'role': 'assistant',
@@ -84,6 +84,21 @@ class AIService{
 
       logger.d('Error: $e');
       return 'fail';
+    }
+  }
+
+  getStyle(int style){
+    switch(style){
+      case 0:
+        return "用正常的风格回答问题";
+      case 1:
+        return "用冷漠的风格回答问题";
+      case 2:
+        return "用热情的风格回答问题";
+      case 3:
+        return "用认真的风格回答问题";
+      default:
+        return "";
     }
   }
 
