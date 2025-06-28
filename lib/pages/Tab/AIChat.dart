@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:summer_assessment/model/DataBase.dart';
+import '../../AIrequest/TranslateAudio.dart';
 import '../../AIrequest/request.dart';
 import '../../main.dart';
 int selectNum = 0;
@@ -19,6 +20,53 @@ class _AIChat_pageState extends State<AIChat_page> {
   bool is_waiting = false;
   List<Map<String,String>> History = [];
   bool is_show = false;
+  final AudioRecorder _recorder = AudioRecorder();
+  final AudioTranslate _translator = AudioTranslate();
+  bool _isRecording = false;
+  String _result = '语言';
+
+  @override
+  void dispose() {
+    _recorder.dispose();
+    super.dispose();
+  }
+
+  Future<void> _startRecording() async {
+    setState(() {
+      _isRecording = true;
+      _result = '停止';
+    });
+    await _recorder.startRecording();
+  }
+
+  Future<void> _stopRecording() async {
+    setState(() {
+      _isRecording = false;
+    });
+    logger.d("111");
+    // 获取Base64编码的音频数据
+    final base64Audio = await _recorder.stopAndGetBase64();
+    logger.d("222");
+    if (base64Audio != null) {
+      // 设置音频数据并发送
+      logger.d("333");
+      _translator.Audio = base64Audio;
+      logger.d(_translator.Audio);
+      //////await _translator.sendAudio();
+      logger.d("444");
+      // 注意：这里需要根据讯飞API的实际返回结果更新UI
+      // 示例中只是简单显示成功消息
+      setState(() {
+        _result = '识别中';
+      });
+    } else {
+      setState(() {
+        _result = '录音失败';
+      });
+    }
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -57,15 +105,6 @@ class _AIChat_pageState extends State<AIChat_page> {
   }
   clean()async{
     logger.d("History.length   "+History.length.toString());
-    /*if(History.length != 0){
-      DatabaseService.instance.insertHistory(jsonEncode([]));
-    }
-    if((await DatabaseService.instance.getAllHistory())==0)
-    {
-      DatabaseService.instance.insertHistory(jsonEncode([]));
-    }*/
-    //DatabaseService.instance.insertHistory(jsonEncode([]));
-
     if(History.length != 0){
       selectNum = (await DatabaseService.instance.getAllHistory()).length;
     }
@@ -110,15 +149,28 @@ class _AIChat_pageState extends State<AIChat_page> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(onPressed: (){
-                        //开始记录音频
+                      ElevatedButton(onPressed: () async {
+                        if(!_isRecording){
+                          _startRecording();
+                        }else{
+                          await _stopRecording();
+                          try {
+                            final result = await _translator.recognize();
 
-                        //音频发送，获取文本
-
-                        setState(() {
-                          question.text = "";
-                        });
-                      }, child: Text("语音")),
+                            setState(() {
+                              question.text = result;
+                              _result = '语音';
+                            });
+                            print('识别结果::: $result');
+                            if(result.isEmpty){
+                              print("识别结果为空");
+                              Get.snackbar("识别结果为空", "没听清捏，再说一次吧");
+                            }
+                          } catch (e) {
+                            print('识别失败: $e');
+                          }
+                        }
+                      }, child: Text(_result)),
                       Expanded(
                         child: TextField(controller: question,decoration:InputDecoration(
                             border: OutlineInputBorder()
@@ -149,7 +201,6 @@ class _AIChat_pageState extends State<AIChat_page> {
                 is_show = false;
               });
             });
-
           })
       ],
     );

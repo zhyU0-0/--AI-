@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:logger/logger.dart';
+import 'package:path/path.dart' as language;
 import 'package:summer_assessment/pages/Tab/AIChat.dart';
 import 'package:summer_assessment/pages/Tab/Questions.dart';
 import 'package:summer_assessment/pages/Tab/User.dart';
-import 'package:summer_assessment/pages/Tab/test.dart';
 import 'package:summer_assessment/routers/routers.dart';
 
 void main() {
@@ -19,13 +19,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: "/",
-      defaultTransition: Transition.rightToLeftWithFade,
-      getPages: AppPage.routers,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+        debugShowCheckedModeBanner: false,
+
+    initialRoute: "/",
+    defaultTransition: Transition.rightToLeftWithFade,
+    getPages: AppPage.routers,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -48,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Pages = [AIChat_page(),Questions(),VoiceRecognitionPage()];
+    Pages = [AIChat_page(),Questions(),User_page()];
 
   }
 

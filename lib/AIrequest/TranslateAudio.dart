@@ -92,9 +92,6 @@ class AudioTranslate {
       final wsUrl = await _createUrl();
       print(wsUrl);
       final channel = WebSocketChannel.connect(Uri.parse(wsUrl));
-
-      print(111);
-
       channel.stream.listen(
             (message) {
           try {
@@ -114,12 +111,9 @@ class AudioTranslate {
         onError: (error) => completer.completeError("WebSocket错误: $error"),
         onDone: () => completer.complete(resultBuffer.toString()),
       );
-      print(222);
-      // 发送音频数据
+
       await _sendAudioData(channel);
-      print(333);
-      // 5秒后自动关闭（实际应根据业务逻辑调整）
-      await Future.delayed(Duration(seconds: 5));
+
       channel.sink.close();
 
     } catch (e) {
