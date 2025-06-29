@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:summer_assessment/model/DataBase.dart';
 
 // 发送邮箱验证码
@@ -132,42 +129,25 @@ class _LandState extends State<Register> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(onPressed: (){Get.back();},
-                        child: Text("back".tr),
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: Size(160, 50), // 设置固定尺寸
-                          side: BorderSide(
-                            color: Color(0xFF728873),      // 边框颜色
-                            width: 1.5,             // 边框宽度
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8), // 圆角
-                          ),
-                          elevation: 4,             // 阴影高度
-                          backgroundColor: Colors.white, // 背景色
-                          foregroundColor: Color(0xFF728873),   // 文字颜色
-                        ),),
                       ElevatedButton(onPressed: (){
                         if(user_name.text.isNotEmpty&&email.text.isNotEmpty&&pass_word.text.isNotEmpty){
                           insert_user();
                         }else{
                           Get.snackbar("请输入信息", "请输入信息");
                         }
-                        // insert_user();
-
                       }, child: Text("register".tr),
                         style: ElevatedButton.styleFrom(
-                          fixedSize: Size(160, 50), // 设置固定尺寸
+                          fixedSize: Size(160, 50),
                           side: BorderSide(
-                            color: Color(0xFF728873),      // 边框颜色
-                            width: 1.5,             // 边框宽度
+                            color: Color(0xFF728873),
+                            width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8), // 圆角
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          elevation: 4,             // 阴影高度
-                          backgroundColor: Colors.white, // 背景色
-                          foregroundColor: Color(0xFF728873),   // 文字颜色
+                          elevation: 4,
+                          backgroundColor: Colors.white,
+                          foregroundColor: Color(0xFF728873),
                         ),
                       )
                     ],
@@ -200,7 +180,7 @@ class _LandState extends State<Register> {
         message: "注册成功",
         duration: Duration(seconds: 1),
       ));
-      Get.toNamed("/land");
+      Get.back();
     }
     /*await verifyCode(email.text,code.text);
     if(is_success){

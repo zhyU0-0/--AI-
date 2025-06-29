@@ -1,6 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../PhotoService/PhotoService.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:summer_assessment/main.dart';
+import 'package:summer_assessment/pages/EditQuestion.dart';
+import '../../Presenter/PhotoService.dart';
 import '../../model/DataBase.dart';
 
 class Questions extends StatefulWidget {
@@ -12,79 +17,237 @@ class Questions extends StatefulWidget {
 
 class _QuestionsState extends State<Questions> {
   List<Map<String, dynamic>> _photos = [];
+  TextEditingController description = TextEditingController();
+  int _type = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadPhotos();
+    Future.delayed(Duration(microseconds: 500), () {
+      _loadQuestion();
+    });
+
   }
 
-  Future<void> _loadPhotos() async {
-    final photos = await DatabaseService.instance.getAllPhotos();
+  Future<void> _loadQuestion() async {
+    final photos = await DatabaseService.instance.getAllQuestion();
     setState(() {
       _photos = photos;
     });
   }
 
-  Future<void> _addPhoto() async {
+  Future<void> _addQuestion() async {
     final pickedFile = await PhotoStorageService.pickImage();
     if (pickedFile != null) {
       // 保存图片到本地存储
       final savedPath = await PhotoStorageService.saveImageToAppDir(pickedFile);
 
       // 保存记录到数据库
-      await DatabaseService.instance.insertPhoto({
+      await DatabaseService.instance.insertQuestion({
         'title': '图片 ${_photos.length + 1}',
         'file_path': savedPath,
         'created_at': DateTime.now().toIso8601String(),
+        "description":description.text,
+        "type":_type.toString()
       });
 
-      _loadPhotos(); // 刷新列表
+      _loadQuestion(); // 刷新列表
     }
   }
-
+  Future<void> _showInputDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext stateContext, StateSetter setState) {
+            return AlertDialog(
+              title: Column(
+                children: [
+                  Text('请输入信息'),
+                  TextField(
+                    controller: description,
+                    decoration: InputDecoration(
+                        label: Text("问题描述")
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      IconButton(onPressed: () {
+                        if (_type > 0) {
+                          setState(() {
+                            _type--;
+                          });
+                        } else {
+                          setState(() {
+                            _type = 3;
+                          });
+                        }
+                        logger.d(_type);
+                      }, icon: Icon(Icons.arrow_back)),
+                      Text(
+                        _type == 0 ? "简单" : _type == 1 ? "普通" : _type == 2
+                            ? "困难"
+                            : "恶梦",
+                        style: TextStyle(
+                            color: _type == 0 ? Colors.green : _type == 1
+                                ? Colors.blue
+                                : _type == 2 ? Colors.orange : Colors.red
+                        ),),
+                      IconButton(onPressed: () {
+                        if (_type < 3) {
+                          setState(() {
+                            _type++;
+                          });
+                        } else {
+                          setState(() {
+                            _type = 0;
+                          });
+                        }
+                        logger.d(_type);
+                      }, icon: Icon(Icons.arrow_forward)),
+                    ],
+                  )
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('取消'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    _addQuestion();
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('添加'),
+                ),
+              ],
+            );
+          }
+        );
+      },
+    );
+  }
   Future<void> _deletePhoto(int id, String filePath) async {
-    // 从数据库删除记录
-    await DatabaseService.instance.deletePhoto(id);
 
-    // 删除本地文件
+    await DatabaseService.instance.deleteQuestion(id);
+
     await PhotoStorageService.deleteImageFile(filePath);
 
-    _loadPhotos(); // 刷新列表
+    _loadQuestion();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('照片管理')),
-      body: _photos.isEmpty
-          ? Center(child: Text('暂无照片，请添加'))
-          : ListView.builder(
-        itemCount: _photos.length,
-        itemBuilder: (context, index) {
-          final photo = _photos[index];
-          return ListTile(
-            leading: Image.file(
-              File(photo['file_path']),
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
-            title: Text(photo['title']),
-            subtitle: Text(photo['created_at']),
-            trailing: IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () => _deletePhoto(
-                  photo['id'],
-                  photo['file_path']
-              ),
-            ),
-          );
-        },
+      body: Column(
+        children: [
+          Row(children: [
+            Text('错题本')
+          ],),
+          _photos.isEmpty
+              ? Center(child: Text('暂无错题，请添加'))
+              : Expanded(child: ListView.builder(
+            itemCount: _photos.length,
+            itemBuilder: (context, index) {
+              final photo = _photos[index];
+              return QuestionCard(
+                delete: () => _deletePhoto(
+                    photo['id'],
+                    photo['file_path']
+                ),
+                photo: photo,
+              );
+            },
+          )
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: _addPhoto,
+        onPressed: (){
+          _showInputDialog(context);
+        },
+      ),
+    );
+  }
+}
+
+class QuestionCard extends StatefulWidget {
+  VoidCallback delete;
+  Map<String,dynamic> photo;
+  QuestionCard({super.key,required this.delete,required this.photo});
+
+  @override
+  State<QuestionCard> createState() => _QuestionCardState();
+}
+
+class _QuestionCardState extends State<QuestionCard> {
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Container(
+        height: 100,
+        width: 350,
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.grey,
+            width: 2
+          ),
+          borderRadius: BorderRadius.circular(10)
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+                child:GestureDetector(
+
+                  child: Row(
+                    children: [
+                      Image.file(
+                        File(widget.photo['file_path']),
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(width: 10), // 添加间距
+
+                      // 使用 Expanded 限制文本区域宽度
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start, // 左对齐
+                          children: [
+                            Text(
+                              (widget.photo['created_at']).toString().split("T")[0],
+                              style: TextStyle(color: Color(0xFF595959)),
+                            ),
+                            Text(
+                              widget.photo['description'],
+                              softWrap: true,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(
+                        builder:(context)=> EditQuestionPage(photo: widget.photo)
+                    ));
+                  },
+                )
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: widget.delete,
+            )
+          ],
+        ),
       ),
     );
   }

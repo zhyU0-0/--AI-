@@ -35,12 +35,14 @@ class DatabaseService {
                 "password TEXT NOT NULL,"
                 "image TEXT NOT NULL"
                 ")"),
-            db.execute("CREATE TABLE photos("
+            db.execute("CREATE TABLE questions("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                "title TEXT,file_path TEXT NOT NULL,"
+                "title TEXT,"
+                "file_path TEXT NOT NULL,"
                 "created_at TEXT NOT NULL,"
                 "is_favorite INTEGER DEFAULT 0,"
-                "discription TEXT"
+                "description TEXT,"
+                "type TEXT"
                 ")"),
             db.execute("CREATE TABLE histories("
                 "id TEXT NOT NULL, "
@@ -55,9 +57,9 @@ class DatabaseService {
 
   }
   // 插入照片记录
-  Future<int> insertPhoto(Map<String, dynamic> row) async {
+  Future<int> insertQuestion(Map<String, dynamic> row) async {
     final db = await instance.database;
-    return await db.insert("photos", row);
+    return await db.insert("questions", row);
   }
   Future<int> insertHistory(String history,String name,String id) async {
     logger.d("insert::");
@@ -75,13 +77,14 @@ class DatabaseService {
         "image":image
       });
     }catch(e){
+      logger.d(e);
       return -1;
     }
   }
   // 获取所有照片
-  Future<List<Map<String, dynamic>>> getAllPhotos() async {
+  Future<List<Map<String, dynamic>>> getAllQuestion() async {
     final db = await instance.database;
-    return await db.query("photos", orderBy: 'created_at DESC');
+    return await db.query("questions", orderBy: 'created_at DESC');
   }
 
   Future<List<Map<String,dynamic>>> getAllHistory(String name) async {
@@ -105,10 +108,10 @@ class DatabaseService {
     return result[0]["password"].toString();
   }
   // 删除照片
-  Future<int> deletePhoto(int id) async {
+  Future<int> deleteQuestion(int id) async {
     final db = await instance.database;
     return await db.delete(
-      "photos",
+      "questions",
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -124,6 +127,17 @@ class DatabaseService {
   }
 
   Future<int> AddHistory(int id,String name,String newH) async {
+    logger.d("00");
+    final db = await instance.database;
+    logger.d("11  id::"+id.toString());
+    return await db.update(
+      "histories",
+      {"history":newH},
+      where: 'id = ? AND name = ?',
+      whereArgs: [id,name],
+    );
+  }
+  Future<int> updateQuestion(int id,String name,String newH) async {
     logger.d("00");
     final db = await instance.database;
     logger.d("11  id::"+id.toString());

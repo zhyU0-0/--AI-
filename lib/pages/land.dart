@@ -1,11 +1,9 @@
 
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:summer_assessment/model/DataBase.dart';
 
 // 发送邮箱验证码
@@ -34,7 +32,7 @@ class _LandState extends State<Land> {
   init()async{
     final prefs = await SharedPreferences.getInstance();
     var a = await prefs.getBool("is_land");
-    if(a == true){Get.toNamed("/home");}
+    if(a == true){Get.offNamed("/home");}
   }
 
   @override

@@ -5,7 +5,7 @@ import 'package:summer_assessment/model/DataBase.dart';
 import '../main.dart';
 
 class AIService{
-  static String Api_key = 'sk-8304f07190544c7682b42db3c894a3d6';
+  static String Api_key = 'sk-6879840f47f046fc84b89c29905be56e';
   static String Api_Url = 'https://api.deepseek.com/v1';
   static String chat_api = '/chat/completions';
   List<Map<String,String>> message_history = [];

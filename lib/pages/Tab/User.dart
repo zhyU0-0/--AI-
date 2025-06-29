@@ -317,7 +317,7 @@ class _UserLandingState extends State<UserLanding> {
                   ],
                 ),
                 onTap: (){
-                  Get.toNamed("/land");
+                  Get.offNamed("/land");
                 },
               ),
             )
