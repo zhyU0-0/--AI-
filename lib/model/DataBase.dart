@@ -42,7 +42,8 @@ class DatabaseService {
                 "created_at TEXT NOT NULL,"
                 "is_favorite INTEGER DEFAULT 0,"
                 "description TEXT,"
-                "type TEXT"
+                "type TEXT,"
+                "name TEXT"
                 ")"),
             db.execute("CREATE TABLE histories("
                 "id TEXT NOT NULL, "
@@ -81,10 +82,10 @@ class DatabaseService {
       return -1;
     }
   }
-  // 获取所有照片
-  Future<List<Map<String, dynamic>>> getAllQuestion() async {
+
+  Future<List<Map<String, dynamic>>> getAllQuestion(String name) async {
     final db = await instance.database;
-    return await db.query("questions", orderBy: 'created_at DESC');
+    return await db.query("questions", orderBy: 'created_at DESC',whereArgs: [name,],where: "name = ?");
   }
 
   Future<List<Map<String,dynamic>>> getAllHistory(String name) async {
@@ -137,13 +138,13 @@ class DatabaseService {
       whereArgs: [id,name],
     );
   }
-  Future<int> updateQuestion(int id,String name,String newH) async {
+  Future<int> updateQuestion(int id,String name,String description,String type) async {
     logger.d("00");
     final db = await instance.database;
     logger.d("11  id::"+id.toString());
     return await db.update(
-      "histories",
-      {"history":newH},
+      "questions",
+      {"description":description,"type":type},
       where: 'id = ? AND name = ?',
       whereArgs: [id,name],
     );

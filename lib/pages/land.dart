@@ -6,11 +6,8 @@ import 'package:logger/logger.dart';
 import 'package:get/get.dart';
 import 'package:summer_assessment/model/DataBase.dart';
 
-// 发送邮箱验证码
-int SendWaitTime = 10;
 
 var logger = Logger();
-
 
 class Land extends StatefulWidget {
   const Land({super.key});

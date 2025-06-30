@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/main.dart';
 import 'package:summer_assessment/pages/EditQuestion.dart';
 import '../../Presenter/PhotoService.dart';
@@ -19,6 +20,7 @@ class _QuestionsState extends State<Questions> {
   List<Map<String, dynamic>> _photos = [];
   TextEditingController description = TextEditingController();
   int _type = 0;
+  String username = '';
 
   @override
   void initState() {
@@ -26,11 +28,13 @@ class _QuestionsState extends State<Questions> {
     Future.delayed(Duration(microseconds: 500), () {
       _loadQuestion();
     });
-
+    logger.d("is init");
   }
 
   Future<void> _loadQuestion() async {
-    final photos = await DatabaseService.instance.getAllQuestion();
+    final prefs = await SharedPreferences.getInstance();
+    username = (await prefs.getString("user_name")).toString();
+    final photos = await DatabaseService.instance.getAllQuestion(username);
     setState(() {
       _photos = photos;
     });
@@ -48,7 +52,8 @@ class _QuestionsState extends State<Questions> {
         'file_path': savedPath,
         'created_at': DateTime.now().toIso8601String(),
         "description":description.text,
-        "type":_type.toString()
+        "type":_type.toString(),
+        "name":username
       });
 
       _loadQuestion(); // 刷新列表
@@ -142,11 +147,19 @@ class _QuestionsState extends State<Questions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title:Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+          Text('错题本'),
+          IconButton(onPressed: (){
+            Get.toNamed("/Chart");
+          }, icon: Icon(Icons.bar_chart))
+        ],),
+      ),
       body: Column(
         children: [
-          Row(children: [
-            Text('错题本')
-          ],),
+          
           _photos.isEmpty
               ? Center(child: Text('暂无错题，请添加'))
               : Expanded(child: ListView.builder(
@@ -159,6 +172,7 @@ class _QuestionsState extends State<Questions> {
                     photo['file_path']
                 ),
                 photo: photo,
+                load: _loadQuestion,
               );
             },
           )
@@ -176,9 +190,10 @@ class _QuestionsState extends State<Questions> {
 }
 
 class QuestionCard extends StatefulWidget {
+  VoidCallback load;
   VoidCallback delete;
   Map<String,dynamic> photo;
-  QuestionCard({super.key,required this.delete,required this.photo});
+  QuestionCard({super.key,required this.delete,required this.photo,required this.load});
 
   @override
   State<QuestionCard> createState() => _QuestionCardState();
@@ -237,7 +252,7 @@ class _QuestionCardState extends State<QuestionCard> {
                   ),
                   onTap: (){
                     Navigator.push(context, MaterialPageRoute(
-                        builder:(context)=> EditQuestionPage(photo: widget.photo)
+                        builder:(context)=> EditQuestionPage(photo: widget.photo,load: widget.load,)
                     ));
                   },
                 )

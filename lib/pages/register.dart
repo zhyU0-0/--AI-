@@ -209,4 +209,3 @@ class _LandState extends State<Register> {
     else{Get.snackbar("错误", "注册失败");}*/
   }
 }
-///politeness
