@@ -16,8 +16,6 @@ class ChartPresenter{
     "ava2":0,
     "ava3":0,
   };
-
-
   ChartPresenter(){
     init();
   }

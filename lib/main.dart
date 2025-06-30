@@ -9,7 +9,10 @@ import 'package:summer_assessment/pages/Tab/User.dart';
 import 'package:summer_assessment/pages/land.dart';
 import 'package:summer_assessment/routers/routers.dart';
 
-void main() {
+
+
+Future<void> main() async {
+
   runApp(const MyApp());
 }
 var logger = Logger();

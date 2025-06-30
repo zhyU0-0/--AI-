@@ -46,12 +46,23 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
             Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.file(
-                    File(widget.photo['file_path']),
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.cover,
-                  ),
+                  GestureDetector(
+                    child: Image.file(
+                      File(widget.photo['file_path']),
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context)=>Photo(path: widget.photo['file_path'])
+                          )
+                      );
+                    },
+                  )
+                  
                 ]
             ),
             Row(
@@ -116,5 +127,27 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
       ),
     );
   }
+}
 
+class Photo extends StatelessWidget {
+  String path;
+  Photo({super.key,required this.path});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.file(
+            File(path),
+            width: 200,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+        ],
+      ),
+    );
+  }
 }

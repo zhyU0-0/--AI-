@@ -173,7 +173,6 @@ class _LandState extends State<Register> {
         message: "用户名已存在",
         duration: Duration(seconds: 1),
       ));
-
     }else{
       Get.showSnackbar(GetSnackBar(
         backgroundColor: Colors.green,
@@ -182,30 +181,7 @@ class _LandState extends State<Register> {
       ));
       Get.back();
     }
-    /*await verifyCode(email.text,code.text);
-    if(is_success){
-      final prefs = await SharedPreferences.getInstance();
-      var ip = prefs.getString("ip");
-      logger.d(ip);
-      final response = await http.post(
-        Uri.parse('$ip/insert_user'),
-        body: jsonEncode({"name":user_name.text,"password":pass_word.text,'email': email.text,"image":image.text.isNotEmpty?image.text:"0"}),
-        headers: {'Content-Type': 'application/json'},
-      );
-      print(response.statusCode);
-      if(response.statusCode==200){
-        final utf8Response = utf8.decode(response.bodyBytes);
-        print(utf8Response);
-        Get.showSnackbar(GetSnackBar(
-          backgroundColor: Colors.green,
-          message: "注册成功",
-          duration: Duration(seconds: 1),
-        ));
-        Get.back();
-      }else{
-        Get.snackbar("错误", "注册失败");
-      }
-    }
-    else{Get.snackbar("错误", "注册失败");}*/
+
   }
 }
+
