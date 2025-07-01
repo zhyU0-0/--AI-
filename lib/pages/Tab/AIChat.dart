@@ -24,7 +24,7 @@ class _AIChat_pageState extends State<AIChat_page> {
   final AudioRecorder _recorder = AudioRecorder();
   final AudioTranslate _translator = AudioTranslate();
   bool _isRecording = false;
-  String _result = '语言';
+  String _result = '语音';
   int style = 0;
 
   @override
@@ -50,19 +50,13 @@ class _AIChat_pageState extends State<AIChat_page> {
     setState(() {
       _isRecording = false;
     });
-    logger.d("111");
-    // 获取Base64编码的音频数据
+
     final base64Audio = await _recorder.stopAndGetBase64();
-    logger.d("222");
+
     if (base64Audio != null) {
-      // 设置音频数据并发送
-      logger.d("333");
+
       _translator.Audio = base64Audio;
-      logger.d(_translator.Audio);
-      //////await _translator.sendAudio();
-      logger.d("444");
-      // 注意：这里需要根据讯飞API的实际返回结果更新UI
-      // 示例中只是简单显示成功消息
+
       setState(() {
         _result = '识别中';
       });
@@ -155,12 +149,11 @@ class _AIChat_pageState extends State<AIChat_page> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton(onPressed: (){
+                    IconButton(onPressed: (){
                       setState(() {
                         is_show = true;
                       });
-                    }, child: Text("H")),
-                    Text("DeepSeek",style: TextStyle(fontSize: 20),),
+                    }, icon: Icon(Icons.table_rows)),
                     ElevatedButton(onPressed: (){clean();}, child: Text("新对话"))
                   ],),),
               Expanded(child: Chat_List(
@@ -245,7 +238,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                         ),),),
                       if(is_waiting)
                         Container(
-                            width: 50,
+                            width: 80,
                             height: 50,
                             child: ElevatedButton(onPressed:(){
                               Get.snackbar("writ", "正在思考中，请耐心等待",backgroundColor: Colors.green);
@@ -255,7 +248,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                             ))
                         ),
                       if(!is_waiting)
-                        ElevatedButton(onPressed:(){chat();} , child: Text("chat")),
+                        IconButton(onPressed: chat, icon: Icon(Icons.arrow_upward_outlined))
                     ],)
               ),
 
@@ -308,8 +301,8 @@ class _Chat_ListState extends State<Chat_List> {
               ),
               padding: EdgeInsets.all(10),
               alignment: Alignment.center,
-              width: (chatHistory[index]["content"]!.length)*15+5<200?
-              (chatHistory[index]["content"]!.length)*15+5 : 200,
+              width: (chatHistory[index]["content"]!.length)*30<200?
+              (chatHistory[index]["content"]!.length)*30 : 200,
               child: Text(chatHistory[index]["content"].toString(),style: TextStyle(
                 fontSize: 15
               ),),
@@ -318,7 +311,7 @@ class _Chat_ListState extends State<Chat_List> {
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [Container(
-                height:60, width: 60,
+                height:30, width: 30,
                 child:Image.asset("images/221.png")
               )],
             )
@@ -334,7 +327,10 @@ class _Chat_ListState extends State<Chat_List> {
                           width: 50,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            children: [Image.asset("images/robot.png")],
+                            children: [Container(
+                                height:30, width: 30,
+                                child:Image.asset("images/robot.png")
+                            )],
                           )
                       ),
                     ],
@@ -346,7 +342,7 @@ class _Chat_ListState extends State<Chat_List> {
                       color:Color(0x5EAEAEAE),
                     ),
                     padding: EdgeInsets.only(left: 10,right: 10),
-                    width: 250,
+                    width: 230,
                     child: Column(
                       children: [
                         Expanded(child: Container(

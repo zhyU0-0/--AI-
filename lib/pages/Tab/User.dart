@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+import 'package:summer_assessment/model/DataBase.dart';
 
 import '../../main.dart';
 
@@ -239,10 +239,11 @@ class _UserLandingState extends State<UserLanding> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //init();
+    init();
+
   }
   init()async{
-    final prefs = await SharedPreferences.getInstance();
+    /*final prefs = await SharedPreferences.getInstance();
     var a = (await prefs.getBool("is_land"))??false;
     email = await prefs.getString("user_email")??"";
     var ip = await prefs.getString("ip")??"";
@@ -262,7 +263,25 @@ class _UserLandingState extends State<UserLanding> {
       image = message[4] == "0" ? message[4] + ".png":message[4] + ".jpg" ;
       user_name = message[1].toString();
     });
-    logger.d("image::"+image+user_name);
+    logger.d("image::"+image+user_name);*/
+    final prefs = await SharedPreferences.getInstance();
+    var a = (await prefs.getBool("is_land"))??false;
+    var _image = "";
+    var _user_name = await prefs.getString("user_name")??"";
+    final userList = await DatabaseService.instance.getAllUser();
+    logger.d(userList);
+    for(var a in userList){
+      if(_user_name == a["name"]){
+        _image = a["image"];
+        logger.d(_image);
+      }
+    }
+    setState(() {
+      is_landing = a;
+      image = _image;
+      user_name = _user_name;
+    });
+    logger.d(image);
   }
   @override
   Widget build(BuildContext context) {
@@ -283,15 +302,22 @@ class _UserLandingState extends State<UserLanding> {
             GestureDetector(
               child: Row(
                 children: [
-                  Container(
-                    width: 100,
-                    height: 80,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(80)
-                    ),
-                    child:ClipOval(
-                      child: image != ''?Image.asset("images/user/$image"):Image.asset("images/user/1.jpg"),
-                    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 8,),
+                      Container(
+                        alignment: Alignment.center,
+                        width: 100,
+                        height: 80,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(80)
+                        ),
+                        child:ClipOval(
+                          child: image != ''?(image == "0"?Image.asset("images/user/0.png"):Image.asset("images/user/$image.jpg")):Image.asset("images/user/1.jpg"),
+                        ),
+                      )
+                    ],
                   ),
 
                   Row(

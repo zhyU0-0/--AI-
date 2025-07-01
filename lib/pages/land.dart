@@ -27,9 +27,7 @@ class _LandState extends State<Land> {
    init();
   }
   init()async{
-    final prefs = await SharedPreferences.getInstance();
-    var a = await prefs.getBool("is_land");
-    if(a == true){Get.offNamed("/home");}
+
   }
 
   @override

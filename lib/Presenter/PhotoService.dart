@@ -11,7 +11,7 @@ class PhotoStorageService {
   static Future<XFile?> pickImage() async {
     return await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 85,  // 压缩质量
+      imageQuality: 85,
     );
   }
 

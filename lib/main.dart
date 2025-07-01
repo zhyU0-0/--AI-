@@ -3,6 +3,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as language;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/pages/Tab/AIChat.dart';
 import 'package:summer_assessment/pages/Tab/Questions.dart';
 import 'package:summer_assessment/pages/Tab/User.dart';
@@ -16,18 +17,36 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 var logger = Logger();
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool landing = true;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    init();
+  }
+  init()async{
+    final prefs = await SharedPreferences.getInstance();
+    var a = await prefs.getBool("is_land")??false;
+    setState(() {
+      landing = a;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-    debugShowCheckedModeBanner: false,
-    initialRoute: "/",
-    defaultTransition: Transition.rightToLeftWithFade,
-    getPages: AppPage.routers,
-      home: Land(),
+      debugShowCheckedModeBanner: false,
+      initialRoute: "/",
+      defaultTransition: Transition.rightToLeftWithFade,
+      getPages: AppPage.routers,
+      home: landing?MyHomePage():Land(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -242,7 +243,7 @@ class _QuestionCardState extends State<QuestionCard> {
                             Text(
                               widget.photo['description'],
                               softWrap: true,
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],

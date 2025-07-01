@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -76,9 +77,23 @@ class AudioTranslate {
         '${now.minute.toString().padLeft(2, '0')}:'
         '${now.second.toString().padLeft(2, '0')} GMT';
   }
+  Future<void> playBase64Audio(String base64Audio) async {
+    final player = AudioPlayer();
 
+    try {
+      // 将 Base64 字符串转换为字节数据
+      final bytes = base64.decode(base64Audio);
+
+      // 使用字节数据播放音频
+      await player.play(BytesSource(bytes));
+    } catch (e) {
+      print('播放音频时出错: $e');
+      rethrow; // 可选：向上传播错误
+    }
+  }
   // 执行语音识别
   Future<String> recognize() async {
+
     final completer = Completer<String>();
     final resultBuffer = StringBuffer();
 
@@ -124,7 +139,7 @@ class AudioTranslate {
 
     final audioBytes = base64.decode(Audio);
     int status = STATUS_FIRST_FRAME;
-
+    await playBase64Audio(Audio);
     for (var i = 0; i < audioBytes.length; i += frameSize) {
       final end = min(i + frameSize, audioBytes.length);
       final frame = audioBytes.sublist(i, end);
@@ -139,7 +154,6 @@ class AudioTranslate {
           "encoding": "raw"
         }
       };
-
       channel.sink.add(json.encode(data));
 
       if (status == STATUS_FIRST_FRAME) {

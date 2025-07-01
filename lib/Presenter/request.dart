@@ -90,13 +90,13 @@ class AIService{
   getStyle(int style){
     switch(style){
       case 0:
-        return "用正常的风格回答问题";
+        return "用正常的风格回答问题：";
       case 1:
-        return "用冷漠的风格回答问题";
+        return "用冷漠的风格回答问题：";
       case 2:
-        return "用热情的风格回答问题";
+        return "用热情的风格回答问题：";
       case 3:
-        return "用认真的风格回答问题";
+        return "用认真的风格回答问题：";
       default:
         return "";
     }

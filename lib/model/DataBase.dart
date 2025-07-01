@@ -82,6 +82,10 @@ class DatabaseService {
       return -1;
     }
   }
+  Future<List<Map<String, dynamic>>> getAllUser() async {
+    final db = await instance.database;
+    return await db.query("users");
+  }
 
   Future<List<Map<String, dynamic>>> getAllQuestion(String name) async {
     final db = await instance.database;
@@ -128,9 +132,7 @@ class DatabaseService {
   }
 
   Future<int> AddHistory(int id,String name,String newH) async {
-    logger.d("00");
     final db = await instance.database;
-    logger.d("11  id::"+id.toString());
     return await db.update(
       "histories",
       {"history":newH},
@@ -138,15 +140,13 @@ class DatabaseService {
       whereArgs: [id,name],
     );
   }
-  Future<int> updateQuestion(int id,String name,String description,String type) async {
-    logger.d("00");
+  Future<int> updateQuestion(Map<String,dynamic> map) async {
     final db = await instance.database;
-    logger.d("11  id::"+id.toString());
     return await db.update(
       "questions",
-      {"description":description,"type":type},
+      map,
       where: 'id = ? AND name = ?',
-      whereArgs: [id,name],
+      whereArgs: [map["id"],map["name"]],
     );
   }
 
