@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
 
@@ -53,10 +54,10 @@ class ChartPresenter{
       summary["ava3"] = double.parse((summary["3"]!/all*100).toStringAsFixed(2));
 
       return [
-        PieData('简单', summary["ava0"]!, Colors.green),
-        PieData('普通', summary["ava1"]!, Colors.blue),
-        PieData('困难', summary["ava2"]!, Colors.orange),
-        PieData('恶梦', summary["ava3"]!, Colors.red),
+        PieData('simple'.tr, summary["ava0"]!, Colors.green),
+        PieData('common'.tr, summary["ava1"]!, Colors.blue),
+        PieData('difficult'.tr, summary["ava2"]!, Colors.orange),
+        PieData('very difficult'.tr, summary["ava3"]!, Colors.red),
 
       ];
     }else{
@@ -71,10 +72,10 @@ class ChartPresenter{
   Future<List<Map<String,dynamic>>>getBarData() async {
     List<Map<String,dynamic>> barData = [];
     barData = [
-      {'类型': '简单', 'sales': summary["0"]},
-      {'类型': '普通', 'sales': summary["1"]},
-      {'类型': '困难', 'sales': summary["2"]},
-      {'类型': '恶梦', 'sales': summary["3"]},
+      {'类型': 'simple'.tr, 'sales': summary["0"]},
+      {'类型': 'common'.tr, 'sales': summary["1"]},
+      {'类型': 'difficult'.tr, 'sales': summary["2"]},
+      {'类型': 'very difficult'.tr, 'sales': summary["3"]},
     ];
     return barData;
   }
@@ -118,13 +119,34 @@ class ChartPresenter{
 
     List<Map<String,dynamic>> lineData = [];
     lineData = [
-      {'类型': now_6.toString().split(' ')[0], 'sales': data_everday[6]},
-      {'类型': now_5.toString().split(' ')[0], 'sales': data_everday[5]},
-      {'类型': now_4.toString().split(' ')[0], 'sales': data_everday[4]},
-      {'类型': now_3.toString().split(' ')[0], 'sales': data_everday[3]},
-      {'类型': now_2.toString().split(' ')[0], 'sales': data_everday[2]},
-      {'类型': now_1.toString().split(' ')[0], 'sales': data_everday[1]},
-      {'类型': now.toString().split(' ')[0], 'sales': data_everday[0]},
+      {
+        '类型': now_6.toString().split(' ')[0].split("-")[1]+"-"+now_6.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[6]
+      },
+      {
+        '类型': now_5.toString().split(' ')[0].split("-")[1]+"-"+now_5.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[5]
+      },
+      {
+        '类型': now_4.toString().split(' ')[0].split("-")[1]+"-"+now_4.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[4]
+      },
+      {
+        '类型': now_3.toString().split(' ')[0].split("-")[1]+"-"+now_3.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[3]
+      },
+      {
+        '类型': now_2.toString().split(' ')[0].split("-")[1]+"-"+now_2.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[2]
+      },
+      {
+        '类型': now_1.toString().split(' ')[0].split("-")[1]+"-"+now_1.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[1]
+      },
+      {
+        '类型': now.toString().split(' ')[0].split("-")[1]+"-"+now.toString().split(' ')[0].split("-")[2],
+        'sales': data_everday[0]
+      },
     ];
     return lineData;
   }

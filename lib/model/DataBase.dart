@@ -86,7 +86,10 @@ class DatabaseService {
     final db = await instance.database;
     return await db.query("users");
   }
-
+  Future<List<Map<String, dynamic>>> getUser(String name) async {
+    final db = await instance.database;
+    return await db.query("users",where: "name = ?",whereArgs: [name]);
+  }
   Future<List<Map<String, dynamic>>> getAllQuestion(String name) async {
     final db = await instance.database;
     return await db.query("questions", orderBy: 'created_at DESC',whereArgs: [name,],where: "name = ?");
@@ -150,4 +153,17 @@ class DatabaseService {
     );
   }
 
+  Future<int> updatePassword(String name,String oldP,String newP,String image) async {
+    final db = await instance.database;
+    final v = await db.query("users",where: "name = ?",whereArgs: [name]);
+    if(v[0]["password"] == oldP){
+      return await db.update("users",{
+        "password":newP,
+        "image":image
+      } ,whereArgs: [name],where: "name = ?");
+    }else{
+      return -1;
+    }
+
+  }
 }

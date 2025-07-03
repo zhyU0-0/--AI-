@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:logger/logger.dart';
-import 'package:path/path.dart' as language;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/pages/Tab/AIChat.dart';
 import 'package:summer_assessment/pages/Tab/Questions.dart';
 import 'package:summer_assessment/pages/Tab/User.dart';
 import 'package:summer_assessment/pages/land.dart';
 import 'package:summer_assessment/routers/routers.dart';
+
+import 'language/language.dart';
 
 
 
@@ -46,6 +47,9 @@ class _MyAppState extends State<MyApp> {
       initialRoute: "/",
       defaultTransition: Transition.rightToLeftWithFade,
       getPages: AppPage.routers,
+      translations: Message(),
+      locale: Locale("zh","CN"),
+      fallbackLocale: Locale("en","US"),
       home: landing?MyHomePage():Land(),
     );
   }
@@ -75,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Color(0xFFE8E6E0),
       body: Center(
         child: Pages[selectedNum]
       ),

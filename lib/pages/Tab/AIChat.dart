@@ -24,7 +24,7 @@ class _AIChat_pageState extends State<AIChat_page> {
   final AudioRecorder _recorder = AudioRecorder();
   final AudioTranslate _translator = AudioTranslate();
   bool _isRecording = false;
-  String _result = '语音';
+  String _result = 'audio'.tr;
   int style = 0;
 
   @override
@@ -41,7 +41,7 @@ class _AIChat_pageState extends State<AIChat_page> {
   Future<void> _startRecording() async {
     setState(() {
       _isRecording = true;
-      _result = '停止';
+      _result = 'stop'.tr;
     });
     await _recorder.startRecording();
   }
@@ -58,11 +58,11 @@ class _AIChat_pageState extends State<AIChat_page> {
       _translator.Audio = base64Audio;
 
       setState(() {
-        _result = '识别中';
+        _result = '识别中'.tr;
       });
     } else {
       setState(() {
-        _result = '录音失败';
+        _result = '录音失败'.tr;
       });
     }
   }
@@ -139,7 +139,6 @@ class _AIChat_pageState extends State<AIChat_page> {
     return Stack(
       children: [
         Container(
-          color: Colors.white,
           alignment: Alignment.center,
           child: Column(
             children: [
@@ -154,17 +153,18 @@ class _AIChat_pageState extends State<AIChat_page> {
                         is_show = true;
                       });
                     }, icon: Icon(Icons.table_rows)),
-                    ElevatedButton(onPressed: (){clean();}, child: Text("新对话"))
+                    ElevatedButton(onPressed: (){clean();}, child: Text("new chat".tr))
                   ],),),
               Expanded(child: Chat_List(
                 History: History,
               )),
+              Container(width: double.infinity,height: 2,color: Colors.blueGrey,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Row(
                     children: [
-                      Text("正常"),
+                      Text("normal".tr),
                       Checkbox(value: style == 0, onChanged: (r){
                         setState(() {
                           style = 0;
@@ -174,7 +174,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                   ),
                   Row(
                     children: [
-                      Text("冷漠"),
+                      Text("cold".tr),
                       Checkbox(value: style == 1, onChanged: (r){
                         setState(() {
                           style = 1;
@@ -184,7 +184,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                   ),
                   Row(
                     children: [
-                      Text("热情"),
+                      Text("enthusiasm".tr),
                       Checkbox(value: style == 2, onChanged: (r){
                         setState(() {
                           style = 2;
@@ -194,7 +194,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                   ),
                   Row(
                     children: [
-                      Text("认真"),
+                      Text("earnest".tr),
                       Checkbox(value: style == 3, onChanged: (r){
                         setState(() {
                           style = 3;
@@ -220,7 +220,7 @@ class _AIChat_pageState extends State<AIChat_page> {
 
                             setState(() {
                               question.text = result;
-                              _result = '语音';
+                              _result = 'audio'.tr;
                             });
                             print('识别结果::: $result');
                             if(result.isEmpty){

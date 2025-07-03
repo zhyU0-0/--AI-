@@ -33,8 +33,10 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE8E6E0),
       appBar: AppBar(
-        title: Text("错题详情"),
+        backgroundColor: Color(0xFFE8E6E0),
+        title: Text("nodeDetail".tr),
       ),
       body: Padding(padding: EdgeInsets.all(10),
         child: Column(
@@ -92,9 +94,9 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
                   logger.d(_type);
                 }, icon: Icon(Icons.arrow_back)),
                 Text(
-                  _type == 0 ? "简单" : _type == 1 ? "普通" : _type == 2
-                      ? "困难"
-                      : "恶梦",
+                  _type == 0 ? "simple".tr : _type == 1 ? "common".tr : _type == 2
+                      ? "difficult".tr
+                      : 'very difficult'.tr,
                   style: TextStyle(
                       color: _type == 0 ? Colors.green : _type == 1
                           ? Colors.blue
@@ -140,7 +142,7 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
                   });
                   widget.load();
                   Get.back();
-                }, child: Text("保存"))
+                }, child: Text("save".tr))
               ],
             )
           ],

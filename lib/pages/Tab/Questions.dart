@@ -69,11 +69,11 @@ class _QuestionsState extends State<Questions> {
             return AlertDialog(
               title: Column(
                 children: [
-                  Text('请输入信息'),
+                  Text('please input information'.tr),
                   TextField(
                     controller: description,
                     decoration: InputDecoration(
-                        label: Text("问题描述")
+                        label: Text("description".tr)
                     ),
                   ),
                   Row(
@@ -91,9 +91,9 @@ class _QuestionsState extends State<Questions> {
                         logger.d(_type);
                       }, icon: Icon(Icons.arrow_back)),
                       Text(
-                        _type == 0 ? "简单" : _type == 1 ? "普通" : _type == 2
-                            ? "困难"
-                            : "恶梦",
+                        _type == 0 ? "simple".tr : _type == 1 ? "common".tr : _type == 2
+                            ? "difficult".tr
+                            : "vale difficult",
                         style: TextStyle(
                             color: _type == 0 ? Colors.green : _type == 1
                                 ? Colors.blue
@@ -120,14 +120,14 @@ class _QuestionsState extends State<Questions> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('取消'),
+                  child: Text('cancel'.tr),
                 ),
                 TextButton(
                   onPressed: () {
                     _addQuestion();
                     Navigator.of(context).pop();
                   },
-                  child: Text('添加'),
+                  child: Text('add'.tr),
                 ),
               ],
             );
@@ -148,11 +148,13 @@ class _QuestionsState extends State<Questions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE8E6E0),
       appBar: AppBar(
-        title:Row(
+        backgroundColor: Color(0xFFE8E6E0),
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-          Text('错题本'),
+          Text('Correction Notebook'.tr),
           IconButton(onPressed: (){
             Get.toNamed("/Chart");
           }, icon: Icon(Icons.bar_chart))
@@ -259,7 +261,7 @@ class _QuestionCardState extends State<QuestionCard> {
                 )
             ),
             IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
+              icon: Icon(Icons.delete),
               onPressed: widget.delete,
             )
           ],

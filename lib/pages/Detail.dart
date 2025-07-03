@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
+import '../model/DataBase.dart';
 
 
 class DetailPage extends StatefulWidget {
@@ -45,6 +46,23 @@ class _DetailPageState extends State<DetailPage> {
     } else if(args == "6"){
       setState(() {
         page = UpdatePassword();
+      });
+    }else{
+      setState(() {
+        page = Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "功能开发中...",
+                  style: TextStyle(fontSize: 40),
+                )
+              ],
+            )
+          ],
+        );
       });
     }
   }
@@ -399,12 +417,12 @@ class UpdatePassword extends StatefulWidget {
 }
 
 class _UpdatePasswordState extends State<UpdatePassword> {
-  String ip = '';
+
   bool is_land = false;
   TextEditingController old_password = new TextEditingController();
   TextEditingController email = new TextEditingController();
   TextEditingController new_password = new TextEditingController();
-
+  TextEditingController image = new TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
@@ -413,11 +431,13 @@ class _UpdatePasswordState extends State<UpdatePassword> {
   }
   init()async{
     final p = await SharedPreferences.getInstance();
-    var aa = await p.getBool("is_land") ?? false; // 添加默认值
+    var aa = await p.getBool("is_land") ?? false;
+    var name = p.getString("user_name")??"";
+    var v = await DatabaseService.instance.getUser(name);
     setState(() {
+      image.text = v[0]["image"];
       is_land = aa;
     });
-    ip = await p.getString("ip") ?? "localhost"; // 添加默认值
   }
 
   @override
@@ -449,13 +469,48 @@ class _UpdatePasswordState extends State<UpdatePassword> {
         Container(
           child:Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(onPressed: (){
+                    var a = int.parse(image.text);
+                    if(a>0){
+                      a--;
+                    }else{
+                      a = 5;
+                    }
+                    setState(() {
+                      image.text = a.toString();
+                    });
+                  }, icon: Icon(Icons.arrow_back)),
+                  Container(
+                      width: 80,
+                      height: 80,
+                      child: ClipOval(
+                          child:Image.asset(image.text == "0"?"images/user/0.png":"images/user/"+image.text+".jpg")
+                      )
+                  ),
+                  IconButton(onPressed: (){
+                    var a = int.parse(image.text);
+                    if(a<5){
+                      a++;
+                    }else{
+                      a = 0;
+                    }
+                    setState(() {
+                      image.text = a.toString();
+                    });
+                  }, icon: Icon(Icons.arrow_forward)),
+                ],
+              ),
+
               Container(
                 height: 50,
                 width: 300,
                 child:TextField(
                   controller: email,
                   decoration: InputDecoration(
-                    label: Text("邮箱"),
+                    label: Text("用户名"),
                     border: OutlineInputBorder()
                 ),
                 ),
@@ -496,7 +551,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
                   if(email.text.isNotEmpty && old_password.text.isNotEmpty && new_password.text.isNotEmpty){
                     update_password();
                   }
-                }, child: Text("更改密码"),
+                }, child: Text("更改"),
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(150, double.infinity),
                   side: BorderSide(
@@ -518,7 +573,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
     );
   }
   update_password()async{
-    final response = await http.post(
+    /*final response = await http.post(
       Uri.parse('$ip/update_password'),
       body: jsonEncode({"email":email.text,"old_password":old_password.text,"new_password":new_password.text}),
       headers: {'Content-Type': 'application/json'},
@@ -533,6 +588,28 @@ class _UpdatePasswordState extends State<UpdatePassword> {
       Get.snackbar("更改失败", '密码错误');
     }else{
       Get.snackbar("错误","数据库错误");
+    }
+  }*/
+    SharedPreferences p = await SharedPreferences.getInstance();
+    var name = p.getString("user_name")??"";
+    int a = await DatabaseService.instance.updatePassword(name, old_password.text, new_password.text, image.text);
+    if(a == -1){
+      Get.showSnackbar(
+          GetSnackBar(
+            message: "更改失败，请确认输入信息是否正确",
+            duration: Duration(seconds: 1),
+            backgroundColor: Colors.orange,
+          )
+      );
+    }else{
+      Get.showSnackbar(
+          GetSnackBar(
+            message: "更改成功！",
+            duration: Duration(seconds: 1),
+            backgroundColor: Colors.green,
+          )
+      );
+      Get.back();
     }
   }
 }

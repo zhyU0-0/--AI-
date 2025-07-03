@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 import '../Presenter/ChartPresenter.dart';
@@ -44,7 +45,7 @@ class _ChartPageState extends State<ChartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("错题统计"),
+        title: Text("Summery".tr),
       ),
       body: Container(
           decoration: BoxDecoration(
@@ -192,10 +193,10 @@ class LineChartSample extends StatefulWidget {
 
 class _LineChartSampleState extends State<LineChartSample> {
   List<Map<String, dynamic>> monthlySales = [
-    {'类型': '衣', 'sales': 0.0},
-    {'类型': '食', 'sales': 0.0},
-    {'类型': '住', 'sales': 0.0},
-    {'类型': '行', 'sales': 0.0},
+    {'类型': '1', 'sales': 0.0},
+    {'类型': '2', 'sales': 0.0},
+    {'类型': '3', 'sales': 0.0},
+    {'类型': '4', 'sales': 0.0},
   ];
   double max_Y = 100;
   @override
@@ -512,8 +513,7 @@ class _BarChartSampleState extends State<BarChartSample> {
                   fitInsideHorizontally: true, // 避免提示框超出屏幕
                 ),
               ),
-              // ---- 其他配置 ----
-              maxY: max_Y, // y轴最大值
+              maxY: max_Y,
             )
         ),
       ),

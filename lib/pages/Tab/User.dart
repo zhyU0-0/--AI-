@@ -26,43 +26,37 @@ class _User_pageState extends State<User_page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE8E6E0),
         body:Stack(
             children: [
               Container(
                 padding: EdgeInsets.only(left: 10,right: 0),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(height: 50,),
-                    UserLanding(),
-                    Expanded(child: ListView(
+                    Column(
+                      children: [
+                        SizedBox(height: 50,),
+                        UserLanding(),
+                        SizedBox(height: 30,),
+                        dataShow(),
+
+                      ],
+                    ),
+                    Container(
+                        height: 400,
+                        child: ListView(
                       children: [
                         ListTile(
                           title: Column(
                             children: [
-                              SizedBox(height: 20,),
-                              Container(
-                                child: ElevatedButton(onPressed: (){
-                                  Get.toNamed("/DetailPage",arguments: "5");
-                                }, child:Row(children: [Text("lank".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: Size(300, 60), // 设置固定尺寸
-                                    side: BorderSide(
-                                      color: Color(0xFF728873),      // 边框颜色
-                                      width: 1.5,             // 边框宽度
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8), // 圆角
-                                    ),
-                                    elevation: 4,             // 阴影高度
-                                    backgroundColor: Colors.white, // 背景色
-                                    foregroundColor: Color(0xFF728873),   // 文字颜色
-                                  ),),
-                              ),
                               SizedBox(height: 5,),
                               Container(
                                 child: ElevatedButton(onPressed: (){
-                                  Get.toNamed("/DetailPage",arguments: "1");
-                                }, child: Row(children: [Text("data".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
+                                  Get.toNamed("/Chart");
+                                }, child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [Text("data".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: Size(300, 60), // 设置固定尺寸
                                     side: BorderSide(
@@ -82,7 +76,9 @@ class _User_pageState extends State<User_page> {
                               Container(
                                 child: ElevatedButton(onPressed: (){
                                   Get.toNamed("/DetailPage",arguments: "2");
-                                }, child:Row(children: [Text("language".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
+                                }, child:Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [Text("language".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: Size(300, 60), // 设置固定尺寸
                                     side: BorderSide(
@@ -98,29 +94,13 @@ class _User_pageState extends State<User_page> {
                                   ),),
                               ),
                               SizedBox(height: 5,),
-                              Container(
-                                child: ElevatedButton(onPressed: (){
-                                  Get.toNamed("/DetailPage",arguments: "6");
-                                }, child:Row(children: [Text("updatePassword".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
-                                  style: ElevatedButton.styleFrom(
-                                    fixedSize: Size(300, 60), // 设置固定尺寸
-                                    side: BorderSide(
-                                      color: Color(0xFF728873),      // 边框颜色
-                                      width: 1.5,             // 边框宽度
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8), // 圆角
-                                    ),
-                                    elevation: 4,             // 阴影高度
-                                    backgroundColor: Colors.white, // 背景色
-                                    foregroundColor: Color(0xFF728873),   // 文字颜色
-                                  ),),
-                              ),
-                              SizedBox(height: 5,),
+
                               Container(
                                 child: ElevatedButton(onPressed: (){
                                   Get.toNamed("/DetailPage",arguments: "4");
-                                }, child:Row(children: [Text("关于"),ImageIcon(AssetImage("images/icons/goto.png"))],),
+                                }, child:Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [Text("关于"),ImageIcon(AssetImage("images/icons/goto.png"))],),
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: Size(300, 60), // 设置固定尺寸
                                     side: BorderSide(
@@ -135,7 +115,7 @@ class _User_pageState extends State<User_page> {
                                     foregroundColor: Color(0xFF728873),   // 文字颜色
                                   ),),
                               ),
-                              SizedBox(height: 5,),
+                              /*SizedBox(height: 5,),
                               Container(
                                 child: ElevatedButton(onPressed: (){
                                   Get.toNamed("/DetailPage",arguments: "3");
@@ -153,12 +133,14 @@ class _User_pageState extends State<User_page> {
                                     backgroundColor: Colors.white, // 背景色
                                     foregroundColor: Color(0xFF728873),   // 文字颜色
                                   ),),
-                              ),
+                              ),*/
                               SizedBox(height: 5,),
                               Container(
                                 child: ElevatedButton(onPressed: (){
                                   _showInputDialog(context);
-                                }, child:Row(children: [Text("exit".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
+                                }, child:Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [Text("exit".tr),ImageIcon(AssetImage("images/icons/goto.png"))],),
                                   style: ElevatedButton.styleFrom(
                                     fixedSize: Size(300, 60), // 设置固定尺寸
                                     side: BorderSide(
@@ -287,7 +269,7 @@ class _UserLandingState extends State<UserLanding> {
   Widget build(BuildContext context) {
     return Container(
       width: 370,
-      height: 100,
+      height: 120,
       alignment: Alignment.center,
       decoration: BoxDecoration(borderRadius:BorderRadius.circular(10),
           border:Border.all(
@@ -301,6 +283,7 @@ class _UserLandingState extends State<UserLanding> {
           if(is_landing)
             GestureDetector(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -322,10 +305,14 @@ class _UserLandingState extends State<UserLanding> {
 
                   Row(
                     children: [
-                      Text("用户名："),
-                      Text(user_name,style: TextStyle(fontSize: 30))
+                      Text("userName".tr+":",style: TextStyle(fontSize: 1)),
+                      Text(user_name,style: TextStyle(fontSize: 20))
                     ],
                   ),
+
+                  IconButton(onPressed: (){
+                    Get.toNamed("/DetailPage",arguments: "6");
+                  }, icon: Icon(Icons.settings))
                 ],
               ),
               onTap: (){
@@ -347,6 +334,79 @@ class _UserLandingState extends State<UserLanding> {
                 },
               ),
             )
+        ],
+      ),
+    );
+  }
+}
+
+class dataShow extends StatefulWidget {
+  const dataShow({super.key});
+
+  @override
+  State<dataShow> createState() => _dataShowState();
+}
+
+class _dataShowState extends State<dataShow> {
+
+  int data = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    init();
+  }
+  init()async{
+    final p = await SharedPreferences.getInstance();
+    var n = p.getString("user_name");
+    var v = await DatabaseService.instance.getAllQuestion(n.toString());
+    setState(() {
+      data = v.length;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 350,
+      height: 130,
+      child:Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("错题数据",style: TextStyle(
+                              fontSize: 25
+                          ),)
+                        ],
+                      ),
+                      SizedBox(height: 10,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("总共添加错题数量：",style: TextStyle(color: Colors.blueGrey),),
+                          Text(data.toString(),style: TextStyle(color: Colors.blueGrey),),
+                          SizedBox(width: 1,)
+                        ],
+                      )
+                    ],
+                  )
+              ),
+              IconButton(onPressed: (){
+                Get.toNamed("/Chart");
+              }, icon: Icon(Icons.pie_chart))
+            ],
+          ),
+          SizedBox(height: 20,),
+          Container(
+            color: Colors.blueGrey,
+            width: 350,
+            height: 2,
+          )
         ],
       ),
     );
