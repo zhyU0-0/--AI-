@@ -46,8 +46,6 @@ class _LandState extends State<Land> {
             child:Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(mainAxisAlignment: MainAxisAlignment.start,
-                children: [BackButton(onPressed: (){Get.back();},)],),
                 Container(width: double.infinity,height: 300,
                 child: Image.asset("images/logo.png"),
                 ),
@@ -75,11 +73,30 @@ class _LandState extends State<Land> {
                   ),
                 ),
                 ),
-                Checkbox(value: is_auth, onChanged: (bool? value) {
-                  setState(() {
-                    is_auth = !is_auth;
-                  });
-                },),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text("自动登录"),
+                    Checkbox(value: is_auth, onChanged: (bool? value) {
+                      setState(() {
+                        is_auth = !is_auth;
+                      });
+                    },
+                      fillColor: MaterialStateProperty.resolveWith<Color?>(
+                          (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return Color(0xFF728873);
+                        }
+                        if (states.contains(MaterialState.disabled)) {
+                          return Colors.white;
+                        }
+                        return Colors.white;
+                      },
+                    ),
+                    ),
+                    SizedBox(width: 30,)
+                  ],
+                ),
                 SizedBox(height: 10,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

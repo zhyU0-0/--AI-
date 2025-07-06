@@ -152,13 +152,29 @@ class _AIChat_pageState extends State<AIChat_page> {
                       setState(() {
                         is_show = true;
                       });
-                    }, icon: Icon(Icons.table_rows)),
-                    ElevatedButton(onPressed: (){clean();}, child: Text("new chat".tr))
+                    }, icon: Icon(Icons.table_rows,color: Color(0xFF637864))),
+                    ElevatedButton(
+                        onPressed: (){clean();},
+                        child: Text("new chat".tr),
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: Size(100, double.infinity), // 设置固定尺寸
+                        side: BorderSide(
+                          color: Color(0xFF728873),      // 边框颜色
+                          width: 1.5,             // 边框宽度
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20), // 圆角
+                        ),
+                        elevation: 4,             // 阴影高度
+                        backgroundColor: Colors.white, // 背景色
+                        foregroundColor: Color(0xFF728873),   // 文字颜色
+                      ),
+                    )
                   ],),),
               Expanded(child: Chat_List(
                 History: History,
               )),
-              Container(width: double.infinity,height: 2,color: Colors.blueGrey,),
+              Container(width: double.infinity,height: 2,color: Color(0xFF637864),),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -169,7 +185,19 @@ class _AIChat_pageState extends State<AIChat_page> {
                         setState(() {
                           style = 0;
                         });
-                      })
+                      },
+                          fillColor: MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return Color(0xFF728873);
+                              }
+                              if (states.contains(MaterialState.disabled)) {
+                                return Colors.white;
+                              }
+                              return Colors.white;
+                            },
+                          )
+                      )
                     ],
                   ),
                   Row(
@@ -179,7 +207,19 @@ class _AIChat_pageState extends State<AIChat_page> {
                         setState(() {
                           style = 1;
                         });
-                      })
+                      },
+                        fillColor: MaterialStateProperty.resolveWith<Color?>(
+                              (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.selected)) {
+                              return Color(0xFF728873);
+                            }
+                            if (states.contains(MaterialState.disabled)) {
+                              return Colors.white;
+                            }
+                            return Colors.white;
+                          },
+                        )
+                      )
                     ],
                   ),
                   Row(
@@ -189,7 +229,19 @@ class _AIChat_pageState extends State<AIChat_page> {
                         setState(() {
                           style = 2;
                         });
-                      })
+                      },
+                          fillColor: MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return Color(0xFF728873);
+                              }
+                              if (states.contains(MaterialState.disabled)) {
+                                return Colors.white;
+                              }
+                              return Colors.white;
+                            },
+                          )
+                      )
                     ],
                   ),
                   Row(
@@ -199,7 +251,19 @@ class _AIChat_pageState extends State<AIChat_page> {
                         setState(() {
                           style = 3;
                         });
-                      })
+                      },
+                          fillColor: MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return Color(0xFF728873);
+                              }
+                              if (states.contains(MaterialState.disabled)) {
+                                return Colors.white;
+                              }
+                              return Colors.white;
+                            },
+                          )
+                      )
                     ],
                   ),
                 ],
@@ -231,7 +295,23 @@ class _AIChat_pageState extends State<AIChat_page> {
                             print('识别失败: $e');
                           }
                         }
-                      }, child: Text(_result)),
+                      },
+                        child: Text(_result),
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: Size(80, 80), // 设置固定尺寸
+                          side: BorderSide(
+                            color: Color(0xFF728873),      // 边框颜色
+                            width: 1.5,             // 边框宽度
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20), // 圆角
+                          ),
+                          elevation: 4,             // 阴影高度
+                          backgroundColor: Colors.white, // 背景色
+                          foregroundColor: Color(0xFF728873),   // 文字颜色
+                        ),
+                      ),
+                      SizedBox(width: 10,),
                       Expanded(
                         child: TextField(controller: question,decoration:InputDecoration(
                             border: OutlineInputBorder()
@@ -248,10 +328,10 @@ class _AIChat_pageState extends State<AIChat_page> {
                             ))
                         ),
                       if(!is_waiting)
-                        IconButton(onPressed: chat, icon: Icon(Icons.arrow_upward_outlined))
+                        IconButton(onPressed: chat, icon: Icon(Icons.arrow_upward_outlined,color: Color(0xFF637864)))
                     ],)
               ),
-
+              SizedBox(height: 10,)
             ],
           ),
         ),
@@ -540,7 +620,7 @@ class _SelectPageState extends State<SelectPage> {
                           padding: EdgeInsets.all(10),
                           height: 50,
                           decoration: BoxDecoration(
-                            color: selectNum == index?Colors.blue: Colors.white,
+                            color: selectNum == index?Color(0xFF728873): Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                                 width: selectNum == index?0:2,

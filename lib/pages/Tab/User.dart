@@ -312,7 +312,7 @@ class _UserLandingState extends State<UserLanding> {
 
                   IconButton(onPressed: (){
                     Get.toNamed("/DetailPage",arguments: "6");
-                  }, icon: Icon(Icons.settings))
+                  }, icon: Icon(Icons.settings,color: Color(0xFF637864),))
                 ],
               ),
               onTap: (){
@@ -388,8 +388,10 @@ class _dataShowState extends State<dataShow> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("总共添加错题数量：",style: TextStyle(color: Colors.blueGrey),),
-                          Text(data.toString(),style: TextStyle(color: Colors.blueGrey),),
+                          Text("总共添加错题数量：",style: TextStyle(color: Color(0xFF637864)),),
+                          Text(data.toString(),style: TextStyle(
+                              fontSize: 30,
+                              color: Color(0xFF637864)),),
                           SizedBox(width: 1,)
                         ],
                       )
@@ -398,12 +400,12 @@ class _dataShowState extends State<dataShow> {
               ),
               IconButton(onPressed: (){
                 Get.toNamed("/Chart");
-              }, icon: Icon(Icons.pie_chart))
+              }, icon: Icon(Icons.pie_chart,color: Color(0xFF637864)))
             ],
           ),
           SizedBox(height: 20,),
           Container(
-            color: Colors.blueGrey,
+            color: Color(0xFF637864),
             width: 350,
             height: 2,
           )

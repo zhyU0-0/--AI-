@@ -46,10 +46,11 @@ class _ChartPageState extends State<ChartPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Summery".tr),
+        backgroundColor: Color(0xFFE8E6E0),
       ),
       body: Container(
           decoration: BoxDecoration(
-              color: Colors.white
+              color: Color(0xFFE8E6E0),
           ),
           padding: EdgeInsets.all(10),
           width: double.infinity,

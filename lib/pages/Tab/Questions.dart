@@ -157,7 +157,8 @@ class _QuestionsState extends State<Questions> {
           Text('Correction Notebook'.tr),
           IconButton(onPressed: (){
             Get.toNamed("/Chart");
-          }, icon: Icon(Icons.bar_chart))
+          }, icon: Icon(Icons.bar_chart,
+          color: Color(0xFF637864),))
         ],),
       ),
       body: Column(
@@ -183,7 +184,8 @@ class _QuestionsState extends State<Questions> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        backgroundColor: Colors.white,
+        child: Icon(Icons.add,color:Color(0xFF637864)),
         onPressed: (){
           _showInputDialog(context);
         },
@@ -240,7 +242,7 @@ class _QuestionCardState extends State<QuestionCard> {
                           children: [
                             Text(
                               (widget.photo['created_at']).toString().split("T")[0],
-                              style: TextStyle(color: Color(0xFF595959)),
+                              style: TextStyle(color:Color(0xFF637864)),
                             ),
                             Text(
                               widget.photo['description'],
@@ -263,6 +265,7 @@ class _QuestionCardState extends State<QuestionCard> {
             IconButton(
               icon: Icon(Icons.delete),
               onPressed: widget.delete,
+              color: Color(0xFF637864),
             )
           ],
         ),
