@@ -1,18 +1,24 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
 import '../main.dart';
 
 class AIService{
-  static String Api_key = 'sk-6879840f47f046fc84b89c29905be56e';
+  static String Api_key = '';
   static String Api_Url = 'https://api.deepseek.com/v1';
   static String chat_api = '/chat/completions';
   List<Map<String,String>> message_history = [];
   AIService(){
     init();
+    const apiKey = String.fromEnvironment('ARK_API_KEY');
+    logger.d('API Key: $apiKey');
+    Api_key = apiKey;
   }
   init()async{
+    String? apiKey = Platform.environment['ARK_API_KEY'];
+    print(apiKey);
 
   }
   Future<String> getChatCompletion(String prompt, int id, int style) async {
