@@ -11,10 +11,12 @@ class AIService{
   static String chat_api = '/chat/completions';
   List<Map<String,String>> message_history = [];
   AIService(){
+    //String o_str = "{\"id\":\"ea274062-cca8-428d-b069-fd65c07b5343\",\"object\":\"chat.completion\",\"created\":1754359388,\"model\":\"deepseek-chat\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```c\n#include <stdio.h>\n\nint main() {\n    printf(\"你会\\n\");\n    return 0;\n}\n```\"},\"logprobs\":null,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":14,\"completion_tokens\":25,\"total_tokens\":39,\"prompt_tokens_details\":{\"cached_tokens},\"prompt_cache_hit_tokens\":0,\"prompt_cache_miss_tokens\":14},\"system_fingerprint\":\"fp_8802369eaa_prod0623_fp8_kvcache\"}";
     init();
     const apiKey = String.fromEnvironment('ARK_API_KEY');
     logger.d('API Key: $apiKey');
     Api_key = apiKey;
+    logger.d('API Key: $Api_key');
   }
   init()async{
     String? apiKey = Platform.environment['ARK_API_KEY'];
@@ -58,9 +60,10 @@ class AIService{
         }
 
         logger.d('解码后的内容: $decodedBody');
-        RegExp exp = RegExp("\"content\":\"(.*?)\"");
+        RegExp exp = RegExp("\"content\":\"(.*?)\"},\"");
         var result = exp.firstMatch(decodedBody);
-        var real_result = result!.group(0).toString().split(":")[1].split("\"")[1];
+        logger.d(result!.group(0).toString());
+        var real_result = result!.group(0).toString().split("\":\"")[1].split("\"},")[0];
         logger.d("解析后：："+real_result);
         final data = jsonDecode(response.body);
         final assistantReply = data['choices'][0]['message']['content'];
@@ -158,3 +161,14 @@ class AIService{
   }
 
 }
+
+/*
+{"id":"73d174f2-b88f-41f4-878f-7084fcccc19e",
+"object":"chat.completion","created":1754358970,
+"model":"deepseek-chat",
+"choices":[
+{"index":0,"message":
+{"role":"assistant",
+"content":
+"```c\n#include <stdio.h>\n\nint main() {\n    int a, b;\n    scanf(\"%d%d\", &a, &b);\n    printf(\"%d\\n\", a + b);\n    return 0;\n}\n```\n\n程序功能：输入两个整数，输出它们的和。"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":324,"completion_tokens":58,"total_tokens":382,"prompt_tokens_details":{"cached_tokens":192},"prompt_cache_hit_tokens":192,"prompt_cache_miss_tokens":132},"system_fingerprint":"fp_8802369eaa_prod0623_fp8_kvcache"}*/
+//{"id":"ea274062-cca8-428d-b069-fd65c07b5343","object":"chat.completion","created":1754359388,"model":"deepseek-chat","choices":[{"index":0,"message":{"role":"assistant","content":"```c\n#include <stdio.h>\n\nint main() {\n    printf(\"你会\\n\");\n    return 0;\n}\n```"},"logprobs":null,"finish_reason":"stop"}],"usage":{"prompt_tokens":14,"completion_tokens":25,"total_tokens":39,"prompt_tokens_details":{"cached_tokens":0},"prompt_cache_hit_tokens":0,"prompt_cache_miss_tokens":14},"system_fingerprint":"fp_8802369eaa_prod0623_fp8_kvcache"}

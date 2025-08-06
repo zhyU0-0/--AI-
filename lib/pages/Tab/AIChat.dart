@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
@@ -26,6 +27,9 @@ class _AIChat_pageState extends State<AIChat_page> {
   bool _isRecording = false;
   String _result = 'audio'.tr;
   int style = 0;
+  GlobalKey<_Chat_ListState> chatKey = new GlobalKey<_Chat_ListState>();
+  Color audio_color = Color(0xFF728873);
+  Color send_color = Color(0xFF728873);
 
   @override
   void dispose() {
@@ -43,11 +47,13 @@ class _AIChat_pageState extends State<AIChat_page> {
       _isRecording = true;
       _result = 'stop'.tr;
     });
+
     await _recorder.startRecording();
   }
 
   Future<void> _stopRecording() async {
     setState(() {
+      audio_color = Colors.grey;
       _isRecording = false;
     });
 
@@ -56,8 +62,12 @@ class _AIChat_pageState extends State<AIChat_page> {
     if (base64Audio != null) {
 
       _translator.Audio = base64Audio;
-
+      question.text = await _translator.recognize();
+      if(question.text.isEmpty){
+        Get.snackbar("Fail", "没听清捏，再说一编吧");
+      }
       setState(() {
+        audio_color = Color(0xFF728873);
         _result = '识别中'.tr;
       });
     } else {
@@ -97,6 +107,7 @@ class _AIChat_pageState extends State<AIChat_page> {
   chat()async{
     if(question.text.isNotEmpty){
       setState(() {
+        send_color = Colors.grey;
         is_waiting = true;
       });
       logger.d(question.text);
@@ -109,6 +120,7 @@ class _AIChat_pageState extends State<AIChat_page> {
         });
         logger.d("new chat history::"+History.toString());
       });
+      sendMessage();
     }else{
       Get.showSnackbar(GetSnackBar(
         title: "请输入问题",
@@ -172,6 +184,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                     )
                   ],),),
               Expanded(child: Chat_List(
+                key: chatKey,
                 History: History,
               )),
               Container(width: double.infinity,height: 2,color: Color(0xFF637864),),
@@ -268,70 +281,57 @@ class _AIChat_pageState extends State<AIChat_page> {
                   ),
                 ],
               ),
-              Container(width: double.infinity,height: 50,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.only(left: 10,right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(onPressed: () async {
-                        if(!_isRecording){
-                          _startRecording();
-                        }else{
-                          await _stopRecording();
-                          try {
-                            final result = await _translator.recognize();
-
-                            setState(() {
-                              question.text = result;
-                              _result = 'audio'.tr;
-                            });
-                            print('识别结果::: $result');
-                            if(result.isEmpty){
-                              print("识别结果为空");
-                              Get.snackbar("识别结果为空", "没听清捏，再说一次吧");
-                            }
-                          } catch (e) {
-                            print('识别失败: $e');
-                          }
-                        }
-                      },
-                        child: Text(_result),
-                        style: ElevatedButton.styleFrom(
-                          fixedSize: Size(80, 80), // 设置固定尺寸
-                          side: BorderSide(
-                            color: Color(0xFF728873),      // 边框颜色
-                            width: 1.5,             // 边框宽度
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20), // 圆角
-                          ),
-                          elevation: 4,             // 阴影高度
-                          backgroundColor: Colors.white, // 背景色
-                          foregroundColor: Color(0xFF728873),   // 文字颜色
-                        ),
+              Row(
+                children: [Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0F2F5),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextField(
+                      controller: question,
+                      textInputAction: TextInputAction.send,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                        hintText: "输入你的问题...",
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 12),
                       ),
-                      SizedBox(width: 10,),
-                      Expanded(
-                        child: TextField(controller: question,decoration:InputDecoration(
-                            border: OutlineInputBorder()
-                        ),),),
-                      if(is_waiting)
-                        Container(
-                            width: 80,
-                            height: 50,
-                            child: ElevatedButton(onPressed:(){
-                              Get.snackbar("writ", "正在思考中，请耐心等待",backgroundColor: Colors.green);
-                            } , child: Container(
-                              width: 160,
-                              child: Text("等待"),
-                            ))
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTapDown: (TapDownDetails details) async {
+                      if(!_isRecording){
+                        _startRecording();
+                      }
+                    },
+                    onTapUp: (TapUpDetails details)=>{
+                      if(_isRecording){
+                        _stopRecording()
+                      }
+                    },
+                    child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: audio_color,
+                          borderRadius: BorderRadius.circular(15)
                         ),
-                      if(!is_waiting)
-                        IconButton(onPressed: chat, icon: Icon(Icons.arrow_upward_outlined,color: Color(0xFF637864)))
-                    ],)
+                        child: const Icon(Icons.mic, size: 20,color: Color(0xFFE8E6E0),)),
+                  ),
+                  FloatingActionButton(
+                    onPressed: chat,
+                    backgroundColor: send_color,
+                    mini: true,
+                    child: const Icon(Icons.send, size: 20,color: Color(0xFFE8E6E0)),
+                  ),
+                ],
               ),
-              SizedBox(height: 10,)
             ],
           ),
         ),
@@ -347,6 +347,14 @@ class _AIChat_pageState extends State<AIChat_page> {
       ],
     );
   }
+  sendMessage(){
+    logger.d("is submit11");
+    question.clear();
+    chatKey.currentState?.sendMessage();
+    setState(() {
+      send_color = Color(0xFF728873);
+    });
+  }
 }
 class Chat_List extends StatefulWidget {
   List<Map<String,String>> History;
@@ -357,7 +365,7 @@ class Chat_List extends StatefulWidget {
 }
 
 class _Chat_ListState extends State<Chat_List> {
-
+  final ScrollController _scrollController = ScrollController();
   List<Map<String,String>> chatHistory = [];
   @override
   void initState() {
@@ -365,10 +373,23 @@ class _Chat_ListState extends State<Chat_List> {
     super.initState();
     init();
   }
-
+  sendMessage(){
+    logger.d("is submit22");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(itemCount: chatHistory.length,
+    return ListView.builder(
+        controller: _scrollController,
+        itemCount: chatHistory.length,
         itemBuilder: (BuildContext context,index){
       return ListTile(
         title:Row(
@@ -427,12 +448,27 @@ class _Chat_ListState extends State<Chat_List> {
                       children: [
                         Expanded(child: Container(
                           alignment: Alignment.centerLeft,
-                          child:RichText(
+                          child:Markdown(
+                            data: formatText(chatHistory[index]["content"].toString()),
+                            // 可以自定义样式
+                            styleSheet: MarkdownStyleSheet(
+                              h1: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                              h2: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              // 其他样式设置...
+                            ),
+                            // 处理链接点击
+                            onTapLink: (text, href, title) {
+                              if (href != null) {
+                                // 在这里处理链接点击事件，例如使用url_launcher打开链接
+                                print('点击了链接: $href');
+                              }
+                            },
+                          )/*Text(chatHistory[index]["content"].toString())*//*RichText(
                               text: TextSpan(
                                 style: TextStyle(fontSize: 16),
                                 children: parseMarkdownText(formatText(chatHistory[index]["content"].toString())),
                               )
-                          )
+                          )*/
                         ),),
                       ],
                     ),
@@ -463,8 +499,12 @@ class _Chat_ListState extends State<Chat_List> {
       });
     }
   }
-
   String formatText(String originalText) {
+    // 先将连续的多个换行符（比如 \n\n 等）替换为单个换行符，再去掉可能多余的首尾换行
+    return originalText
+        .replaceAll(r'\n', '\n');    // 将 "\n" 转换为实际换行符
+  }
+  /*String formatText(String originalText) {
     // 先将连续的多个换行符（比如 \n\n 等）替换为单个换行符，再去掉可能多余的首尾换行
     return originalText
         .replaceAll(r'\n', '\n')    // 将 "\n" 转换为实际换行符
@@ -507,7 +547,7 @@ class _Chat_ListState extends State<Chat_List> {
     }
 
     return spans;
-  }
+  }*/
 }
 
 

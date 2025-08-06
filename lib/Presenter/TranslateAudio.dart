@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
@@ -6,10 +8,65 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
+import 'package:summer_assessment/main.dart';
 import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'TranslateTools/onesentence_plugin.dart';
 
+/// 语音识别工具类
+/// 支持传入Base64字符串格式的音频数据，返回识别结果
+class VoiceRecognizer {
+  final OneSentenceASRController _controller = OneSentenceASRController();
 
+  /// 语音识别方法
+  /// [audioBase64]：Base64编码的音频字符串
+  /// [appId]：腾讯云AppId
+  /// [secretId]：腾讯云SecretId
+  /// [secretKey]：腾讯云SecretKey
+  /// [token]：可选，临时鉴权token
+  /// [engineType]：引擎类型，默认16k中文
+  /// 返回识别结果字符串
+  Future<String?> recognize(
+      String audioBase64) async {
+    try {
+      // 1. 将Base64字符串解码为音频二进制数据
+      final Uint8List audioData = base64Decode(audioBase64);
+
+      // 2. 配置识别参数
+      final params = OneSentenceASRParams()
+        //..appid = int.parse(appId)
+        //..secretid = secretId
+        //..secretkey = secretKey
+        //..token = token
+        //..engine_type = engineType
+        ..data = audioBase64.toString()
+      ..eng_serice_type = "8k_zh"; // 设置音频数据
+      // 3. 调用识别接口
+      final result = await _controller.recognize(params);
+
+      // 4. 处理识别结果
+      if (result.error == null) {
+        // 识别成功，返回识别文本
+        return result.result != null ? result.result : "未识别到有效内容";
+
+      } else {
+        // 识别失败，返回错误信息
+        return "识别失败：${result.result.toString()+" || "+result.response_body}（错误码：${result.error}）";
+      }
+    } catch (e) {
+      // 捕获异常
+      logger.e("识别异常：${e.toString()}");
+      return "识别异常：${e.toString()}";
+    }
+  }
+
+  /// 释放资源
+  void dispose() {
+    // 可根据插件实际需求添加资源释放逻辑
+  }
+}
 
 //听写识别
 class AudioTranslate {
@@ -57,8 +114,15 @@ class AudioTranslate {
       "date": date,
       "host": host
     };
-
-
+    /*var _params = OneSentenceASRParams();
+    _params.binary_data = Uint8List.view((await rootBundle.load("assets/30s.wav")).buffer);
+    _params.voice_format = OneSentenceASRParams.FORMAT_WAV;*/
+    /*final params = OneSentenceASRParams();
+    _params.appid = 123456; // 你的腾讯云 AppId（从腾讯云控制台获取）
+    params.secretid = "your_secretid"; // 你的腾讯云 SecretId
+    params.secretkey = "your_secretkey"; // 你的腾讯云 SecretKey
+    params.engine_type = OneSentenceASRParams.ENGINE_16K_ZH; // 引擎模型（例如16k中文）
+    params.voice_format = OneSentenceASRParams.FORMAT_WAV; // 音频格式*/
     final queryString = Uri(queryParameters: params).query;
     return "wss://$host$path?$queryString";
   }
@@ -94,7 +158,10 @@ class AudioTranslate {
   // 执行语音识别
   Future<String> recognize() async {
 
-    final completer = Completer<String>();
+    var str = await VoiceRecognizer().recognize(Audio);
+    logger.d("recognize:: ${str}");
+    return str.toString();
+    /*final completer = Completer<String>();
     final resultBuffer = StringBuffer();
 
     try {
@@ -129,7 +196,7 @@ class AudioTranslate {
       completer.completeError("连接建立失败: $e");
     }
 
-    return completer.future;
+    return completer.future;*/
   }
 
   //分帧
@@ -197,7 +264,7 @@ class AudioRecorder {
       path: path,
       encoder: AudioEncoder.wav,
       bitRate: 128000,
-      samplingRate: 16000,
+      samplingRate: 8000,
     );
 
     return path;
