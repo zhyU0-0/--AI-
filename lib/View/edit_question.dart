@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../Presenter/QuestionEditor.dart';
+import '../Presenter/question_editor.dart';
 import '../main.dart';
 
 class EditQuestionPage extends StatefulWidget {

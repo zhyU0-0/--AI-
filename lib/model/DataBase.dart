@@ -71,12 +71,13 @@ class DatabaseService {
   Future<int> insertUser(String name,String password,String image,String email) async {
     final db = await instance.database;
     try{
-      return await db.insert("users", {
+      await db.insert("users", {
         "name":name,
         "password":password,
         "email":email,
         "image":image
       });
+      return 0;
     }catch(e){
       logger.d(e);
       return -1;

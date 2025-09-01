@@ -13,7 +13,7 @@ import 'dart:math';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'TranslateTools/onesentence_plugin.dart';
+import 'translate_tools/onesentence_plugin.dart';
 
 /// 语音识别工具类
 /// 支持传入Base64字符串格式的音频数据，返回识别结果
@@ -47,9 +47,9 @@ class VoiceRecognizer {
       final result = await _controller.recognize(params);
 
       // 4. 处理识别结果
-      if (result.error == null) {
+      if (result.error == null || result.error.toString().isEmpty) {
         // 识别成功，返回识别文本
-        return result.result != null ? result.result : "未识别到有效内容";
+        return result.error.toString().isNotEmpty ? result.result : "未识别到有效内容";
 
       } else {
         // 识别失败，返回错误信息
@@ -115,7 +115,7 @@ class AudioTranslate {
       "host": host
     };
     /*var _params = OneSentenceASRParams();
-    _params.binary_data = Uint8List.view((await rootBundle.load("assets/30s.wav")).buffer);
+    _params.binary_data = Uint8List.View((await rootBundle.load("assets/30s.wav")).buffer);
     _params.voice_format = OneSentenceASRParams.FORMAT_WAV;*/
     /*final params = OneSentenceASRParams();
     _params.appid = 123456; // 你的腾讯云 AppId（从腾讯云控制台获取）

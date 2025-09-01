@@ -15,7 +15,7 @@ class AIService{
     init();
     const apiKey = String.fromEnvironment('ARK_API_KEY');
     logger.d('API Key: $apiKey');
-    Api_key = apiKey;
+    Api_key = "";
     logger.d('API Key: $Api_key');
   }
   init()async{

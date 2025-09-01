@@ -3,10 +3,10 @@
 import 'package:get/get.dart';
 
 import '../main.dart';
-import '../pages/ChartPage.dart';
-import '../pages/Detail.dart';
-import '../pages/land.dart';
-import '../pages/register.dart';
+import '../View/chart_page.dart';
+import '../View/detail.dart';
+import '../View/land.dart';
+import '../View/register.dart';
 
 class AppPage{
   static final routers = [

@@ -3,10 +3,10 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:summer_assessment/pages/Tab/AIChat.dart';
-import 'package:summer_assessment/pages/Tab/Questions.dart';
-import 'package:summer_assessment/pages/Tab/User.dart';
-import 'package:summer_assessment/pages/land.dart';
+import 'package:summer_assessment/View/Tab/ai_chat.dart';
+import 'package:summer_assessment/View/Tab/questions.dart';
+import 'package:summer_assessment/View/Tab/user.dart';
+import 'package:summer_assessment/View/land.dart';
 import 'package:summer_assessment/routers/routers.dart';
 
 import 'language/language.dart';

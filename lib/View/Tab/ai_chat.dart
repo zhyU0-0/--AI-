@@ -5,7 +5,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
-import '../../Presenter/TranslateAudio.dart';
+import '../../Presenter/translate_audio.dart';
 import '../../Presenter/request.dart';
 import '../../main.dart';
 int selectNum = 0;

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
-import '../Presenter/ChartPresenter.dart';
+import '../Presenter/chart_presenter.dart';
 
 var logger = Logger();
 

@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/main.dart';
-import 'package:summer_assessment/pages/EditQuestion.dart';
-import '../../Presenter/PhotoService.dart';
+import 'package:summer_assessment/View/edit_question.dart';
+import '../../Presenter/photo_service.dart';
 import '../../model/DataBase.dart';
 
 class Questions extends StatefulWidget {

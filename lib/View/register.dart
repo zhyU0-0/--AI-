@@ -167,6 +167,7 @@ class _LandState extends State<Register> {
         image.text,
         email.text
     );
+    logger.d(a);
     if(a == -1){
       Get.showSnackbar(GetSnackBar(
         backgroundColor: Color(0xff935757),
@@ -174,12 +175,13 @@ class _LandState extends State<Register> {
         duration: Duration(seconds: 1),
       ));
     }else{
+      Get.back();
       Get.showSnackbar(GetSnackBar(
         backgroundColor: Colors.green,
         message: "注册成功",
         duration: Duration(seconds: 1),
       ));
-      Get.back();
+
     }
 
   }

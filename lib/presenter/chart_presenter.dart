@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/model/DataBase.dart';
 
-import '../pages/ChartPage.dart';
+import '../View/chart_page.dart';
 
 class ChartPresenter{
 
