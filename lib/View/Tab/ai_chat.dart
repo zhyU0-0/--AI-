@@ -25,6 +25,8 @@ class _AIChat_pageState extends State<AIChat_page> {
   final AudioRecorder _recorder = AudioRecorder();
   final AudioTranslate _translator = AudioTranslate();
   bool _isRecording = false;
+  bool _isRecognizing = false;
+  bool _isRequseting = false;
   String _result = 'audio'.tr;
   int style = 0;
   GlobalKey<_Chat_ListState> chatKey = new GlobalKey<_Chat_ListState>();
@@ -57,6 +59,7 @@ class _AIChat_pageState extends State<AIChat_page> {
   Future<void> _stopRecording() async {
     setState(() {
       audio_color = Colors.grey;
+      _isRecognizing = true;
       _isRecording = false;
     });
 
@@ -66,15 +69,18 @@ class _AIChat_pageState extends State<AIChat_page> {
 
       _translator.Audio = base64Audio;
       question.text = await _translator.recognize();
+
       if(question.text.isEmpty){
         Get.snackbar("Fail", "没听清捏，再说一编吧");
       }
       setState(() {
+        _isRecognizing = false;
         audio_color = Color(0xFF728873);
         _result = '识别中'.tr;
       });
     } else {
       setState(() {
+        _isRecognizing = false;
         _result = '录音失败'.tr;
       });
     }
@@ -108,8 +114,9 @@ class _AIChat_pageState extends State<AIChat_page> {
     logger.d("is init   "+selectNum.toString());
   }
   chat()async{
-    if(question.text.isNotEmpty){
+    if(question.text.isNotEmpty && !_isRequseting){
       setState(() {
+        _isRequseting = true;
         send_color = Colors.grey;
         is_waiting = true;
       });
@@ -120,17 +127,28 @@ class _AIChat_pageState extends State<AIChat_page> {
           question.text = '';
           History = r;
           is_waiting = false;
+          _isRequseting = false;
         });
         logger.d("new chat history::"+History.toString());
       });
       sendMessage();
     }else{
-      Get.showSnackbar(GetSnackBar(
-        title: "请输入问题",
-        backgroundColor: Colors.green,
-        message: "请输入问题",
-        duration: Duration(seconds: 2),
-      ));
+      if(_isRequseting){
+        Get.showSnackbar(GetSnackBar(
+          title: "正在思考哦",
+          backgroundColor: Colors.green,
+          message: "正在思考哦~",
+          duration: Duration(seconds: 2),
+        ));
+      }else{
+        Get.showSnackbar(GetSnackBar(
+          title: "请输入问题",
+          backgroundColor: Colors.green,
+          message: "请输入问题",
+          duration: Duration(seconds: 2),
+        ));
+      }
+
     }
   }
   clean()async{
@@ -278,12 +296,12 @@ class _AIChat_pageState extends State<AIChat_page> {
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTapDown: (TapDownDetails details) async {
-                      if(!_isRecording){
+                      if(!_isRecording && !_isRecognizing){
                         _startRecording();
                       }
                     },
                     onTapUp: (TapUpDetails details)=>{
-                      if(_isRecording){
+                      if(_isRecording && !_isRecognizing){
                         _stopRecording()
                       }
                     },
