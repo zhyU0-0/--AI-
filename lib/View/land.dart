@@ -151,8 +151,9 @@ class _LandState extends State<Land> {
     logger.d(password + pass_word.text);
     if(password == pass_word.text){
       if(is_auth){
-        prefs.setBool("is_land", true);
+        prefs.setBool("is_land", true);//自动登录的
       }
+      prefs.setBool("is_landing", true);//登录的
       prefs.setString("user_name", user_name.text);
       Get.showSnackbar(GetSnackBar(
         message:"登陆成功,登陆成功",

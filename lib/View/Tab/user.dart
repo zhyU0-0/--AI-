@@ -210,6 +210,7 @@ class _User_pageState extends State<User_page> {
   exit()async{
     final prefs = await SharedPreferences.getInstance();
    await prefs.setBool("is_land",false);
+    await prefs.setBool("is_landing",false);
     await prefs.setString("user_email",'');
     await prefs.setBool("is_auth",false);
   }
@@ -238,7 +239,7 @@ class _UserLandingState extends State<UserLanding> {
   init()async{
 
     final prefs = await SharedPreferences.getInstance();
-    var a = (await prefs.getBool("is_land"))??false;
+    var a = (await prefs.getBool("is_landing"))??false;
     var _image = "";
     var _user_name = await prefs.getString("user_name")??"";
     final userList = await DatabaseService.instance.getAllUser();
