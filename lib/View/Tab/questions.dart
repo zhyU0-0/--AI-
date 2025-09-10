@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:summer_assessment/main.dart';
 import 'package:summer_assessment/View/edit_question.dart';
@@ -60,6 +61,45 @@ class _QuestionsState extends State<Questions> {
       _loadQuestion(); // 刷新列表
     }
   }
+
+  Future<void> _showDeleteDialog(BuildContext context,Map<String, dynamic> photo) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext stateContext, StateSetter setState) {
+              return AlertDialog(
+                title: Column(
+                  children: [
+                    Text("是否删除？")
+                  ],
+                ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(onPressed: () {
+                        Navigator.of(context).pop();
+                      },child: Text('cancel'.tr)),
+                      ElevatedButton(onPressed: () {
+                        _deletePhoto(
+                            photo['id'],
+                            photo['file_path']);
+                        Navigator.of(context).pop();
+                      },child: Text('delete'.tr,style: TextStyle(
+                        color: Colors.red
+                      ),))
+                    ],
+                  )
+
+                ],
+              );
+            }
+        );
+      },
+    );
+  }
+
   Future<void> _showInputDialog(BuildContext context) async {
     return showDialog(
       context: context,
@@ -67,54 +107,85 @@ class _QuestionsState extends State<Questions> {
         return StatefulBuilder(
           builder: (BuildContext stateContext, StateSetter setState) {
             return AlertDialog(
-              title: Column(
-                children: [
-                  Text('please input information'.tr),
-                  TextField(
-                    controller: description,
-                    decoration: InputDecoration(
-                        label: Text("description".tr)
+              content: SingleChildScrollView(
+                // 动态获取键盘高度，设置底部内边距
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: Container(
+                    width: 200,
+                    height: 400,
+                    child: Column(
+                      children: [
+                        Text('please input information'.tr),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text("选择题目类型",style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13
+                                ),),
+
+                                IconButton(onPressed: () {
+                                  if (_type > 0) {
+                                    setState(() {
+                                      _type--;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      _type = 3;
+                                    });
+                                  }
+                                  logger.d(_type);
+                                }, icon: Icon(Icons.arrow_back)),
+
+                                Text(
+                                  _type == 0 ? "simple".tr : _type == 1 ? "common".tr : _type == 2
+                                      ? "difficult".tr
+                                      : "very difficult".tr,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: _type == 0 ? Colors.green : _type == 1
+                                          ? Colors.blue
+                                          : _type == 2 ? Colors.orange : Colors.red
+                                  ),),
+                                IconButton(onPressed: () {
+                                  if (_type < 3) {
+                                    setState(() {
+                                      _type++;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      _type = 0;
+                                    });
+                                  }
+                                  logger.d(_type);
+                                }, icon: Icon(Icons.arrow_forward)),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          width: 200,
+                          height: 300,
+                          //padding: EdgeInsets.only(left: 0,right: 20),
+                          child: TextField(
+                            controller: description,
+                            decoration: InputDecoration(
+                                label: Text("description".tr)
+                            ),
+                          ),
+                        ),
+
+                      ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      IconButton(onPressed: () {
-                        if (_type > 0) {
-                          setState(() {
-                            _type--;
-                          });
-                        } else {
-                          setState(() {
-                            _type = 3;
-                          });
-                        }
-                        logger.d(_type);
-                      }, icon: Icon(Icons.arrow_back)),
-                      Text(
-                        _type == 0 ? "simple".tr : _type == 1 ? "common".tr : _type == 2
-                            ? "difficult".tr
-                            : "vale difficult",
-                        style: TextStyle(
-                            color: _type == 0 ? Colors.green : _type == 1
-                                ? Colors.blue
-                                : _type == 2 ? Colors.orange : Colors.red
-                        ),),
-                      IconButton(onPressed: () {
-                        if (_type < 3) {
-                          setState(() {
-                            _type++;
-                          });
-                        } else {
-                          setState(() {
-                            _type = 0;
-                          });
-                        }
-                        logger.d(_type);
-                      }, icon: Icon(Icons.arrow_forward)),
-                    ],
-                  )
-                ],
+                ),
               ),
+
               actions: [
                 TextButton(
                   onPressed: () {
@@ -148,6 +219,7 @@ class _QuestionsState extends State<Questions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFFE8E6E0),
       appBar: AppBar(
         backgroundColor: Color(0xFFE8E6E0),
@@ -171,10 +243,9 @@ class _QuestionsState extends State<Questions> {
             itemBuilder: (context, index) {
               final photo = _photos[index];
               return QuestionCard(
-                delete: () => _deletePhoto(
-                    photo['id'],
-                    photo['file_path']
-                ),
+                delete: (){
+                  _showDeleteDialog(context, photo);
+                },
                 photo: photo,
                 load: _loadQuestion,
               );

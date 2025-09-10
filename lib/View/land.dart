@@ -67,6 +67,7 @@ class _LandState extends State<Land> {
                   height: 40,
                   width: double.infinity,
                   child: TextField(controller: pass_word,
+                    obscureText: true,
                   decoration: InputDecoration(
                       label: Text("password".tr),
                       border: OutlineInputBorder()

@@ -11,7 +11,6 @@ class QuestionEditor{
     final pickedFile = await PhotoStorageService.pickImage();
 
     if (pickedFile != null) {
-      // 保存图片到本地存储
       final savedPath = await PhotoStorageService.saveImageToAppDir(pickedFile);
       return savedPath;
     }

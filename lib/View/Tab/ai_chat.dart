@@ -31,6 +31,9 @@ class _AIChat_pageState extends State<AIChat_page> {
   Color audio_color = Color(0xFF728873);
   Color send_color = Color(0xFF728873);
 
+  double tap_x = 0;
+  double tap_y = 0;
+  bool is_update_style = false;
   @override
   void dispose() {
     _recorder.dispose();
@@ -165,23 +168,11 @@ class _AIChat_pageState extends State<AIChat_page> {
                         is_show = true;
                       });
                     }, icon: Icon(Icons.table_rows,color: Color(0xFF637864))),
-                    ElevatedButton(
-                        onPressed: (){clean();},
-                        child: Text("new chat".tr),
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: Size(100, double.infinity), // 设置固定尺寸
-                        side: BorderSide(
-                          color: Color(0xFF728873),      // 边框颜色
-                          width: 1.5,             // 边框宽度
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20), // 圆角
-                        ),
-                        elevation: 4,             // 阴影高度
-                        backgroundColor: Colors.white, // 背景色
-                        foregroundColor: Color(0xFF728873),   // 文字颜色
-                      ),
-                    )
+                    IconButton(onPressed: (){
+                      setState(() {
+                        clean();
+                      });
+                    }, icon: Icon(Icons.add,size: 30,color: Color(0xFF637864))),
                   ],),),
               Expanded(child: Chat_List(
                 key: chatKey,
@@ -189,96 +180,77 @@ class _AIChat_pageState extends State<AIChat_page> {
               )),
               Container(width: double.infinity,height: 2,color: Color(0xFF637864),),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text("normal".tr),
-                      Checkbox(value: style == 0, onChanged: (r){
-                        setState(() {
-                          style = 0;
-                        });
-                      },
-                          fillColor: MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.selected)) {
-                                return Color(0xFF728873);
-                              }
-                              if (states.contains(MaterialState.disabled)) {
-                                return Colors.white;
-                              }
-                              return Colors.white;
-                            },
-                          )
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text("cold".tr),
-                      Checkbox(value: style == 1, onChanged: (r){
-                        setState(() {
-                          style = 1;
-                        });
-                      },
-                        fillColor: MaterialStateProperty.resolveWith<Color?>(
-                              (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.selected)) {
-                              return Color(0xFF728873);
-                            }
-                            if (states.contains(MaterialState.disabled)) {
-                              return Colors.white;
-                            }
-                            return Colors.white;
-                          },
-                        )
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text("enthusiasm".tr),
-                      Checkbox(value: style == 2, onChanged: (r){
-                        setState(() {
-                          style = 2;
-                        });
-                      },
-                          fillColor: MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.selected)) {
-                                return Color(0xFF728873);
-                              }
-                              if (states.contains(MaterialState.disabled)) {
-                                return Colors.white;
-                              }
-                              return Colors.white;
-                            },
-                          )
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text("earnest".tr),
-                      Checkbox(value: style == 3, onChanged: (r){
+                  GestureDetector(
+                    onLongPressStart: (details) {
+                      logger.d("Down");
+                      //_showInputDialog(context);
+                      setState(() {
+                        is_update_style = true;
+                        tap_x = details.localPosition.dx;
+                        tap_y = details.localPosition.dy;
+                      });
+                    },
+                    onLongPressMoveUpdate: (LongPressMoveUpdateDetails details) {
+                      logger.d("长按移动 - 当前位置: ${details.localPosition}");
+                      // 更新移动过程中的坐标
+                      if(details.localPosition.dy-tap_y>0&&details.localPosition.dx-tap_x>0){
                         setState(() {
                           style = 3;
                         });
-                      },
-                          fillColor: MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                              if (states.contains(MaterialState.selected)) {
-                                return Color(0xFF728873);
-                              }
-                              if (states.contains(MaterialState.disabled)) {
-                                return Colors.white;
-                              }
-                              return Colors.white;
-                            },
+                      }
+                      else if(details.localPosition.dy-tap_y>0&&details.localPosition.dx-tap_x<0){
+                        setState(() {
+                          style = 2;
+                        });
+                      }
+                      else if(details.localPosition.dy-tap_y<0&&details.localPosition.dx-tap_x>0){
+                        setState(() {
+                          style = 1;
+                        });
+                      }
+                      else if(details.localPosition.dy-tap_y<0&&details.localPosition.dx-tap_x<0){
+                        setState(() {
+                          style = 0;
+                        });
+                      }
+                      logger.d(details.localPosition.dy-tap_y);
+
+                    },
+
+                    onLongPressEnd: (details) {
+
+                      logger.d("up");
+                      setState(() {
+                        is_update_style = false;
+                      });
+                      //Navigator.of(context).pop();
+                    },
+                    child:Padding(
+                        padding: EdgeInsets.only(top: 2,bottom: 2,left: 10),
+                      child: Container(
+                        alignment: AlignmentDirectional.center,
+                        height: 25,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Color(0xFF637864),
+                            width: 2
                           )
-                      )
-                    ],
-                  ),
+                        ),
+                        child:Padding(padding: EdgeInsets.only(left: 10,right: 10),
+                        child: Text(
+                            style: TextStyle(
+                                color: Color(0xFF637864)
+                            ),
+                            style==0?"normal".tr:style==1?"cold".tr:style==2?"enthusiasm".tr:"earnest".tr
+                        ),),
+                      ),
+                    ),
+                  )
+
                 ],
               ),
               Row(
@@ -332,6 +304,7 @@ class _AIChat_pageState extends State<AIChat_page> {
                   ),
                 ],
               ),
+              SizedBox(height: 5,)
             ],
           ),
         ),
@@ -343,7 +316,45 @@ class _AIChat_pageState extends State<AIChat_page> {
                 is_show = false;
               });
             });
-          })
+          }),
+        if(is_update_style)
+          Container(
+            color: Color(0x88000000),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 320,
+                        height: 500,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                SelectStyle(style: style, r_style: 0, content: "normal"),
+                                SizedBox(width: 5,),
+                                SelectStyle(style: style, r_style: 1, content: "cold"),
+                              ],
+                            ),
+                            SizedBox(height: 5,),
+                            Row(
+                              children: [
+                                SelectStyle(style: style, r_style: 2, content: "enthusiasm"),
+                                SizedBox(width: 5,),
+                                SelectStyle(style: style, r_style: 3, content: "earnest"),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              )
+          )
+
       ],
     );
   }
@@ -356,6 +367,63 @@ class _AIChat_pageState extends State<AIChat_page> {
     });
   }
 }
+
+class SelectStyle extends StatefulWidget {
+  int style;
+  int r_style;
+  String content;
+  SelectStyle({super.key,required this.style,required this.r_style,required this.content,});
+
+  @override
+  State<SelectStyle> createState() => _SelectStyleState();
+}
+
+class _SelectStyleState extends State<SelectStyle> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 150,
+      height: 150,
+      alignment: widget.r_style == 0?Alignment.bottomLeft:widget.r_style == 1?Alignment.bottomRight:widget.r_style == 2?Alignment.topLeft:Alignment.topRight,
+      child: Row(
+        mainAxisAlignment: widget.r_style%2 != 1?MainAxisAlignment.end:MainAxisAlignment.start,
+        children: [
+          // 使用AnimatedContainer替代Container
+          AnimatedContainer(
+            // 动画持续时间（毫秒）
+            duration: Duration(milliseconds: 200),
+            // 动画曲线（可选，默认是线性）
+            curve: Curves.easeInOut,
+
+            width: widget.style == widget.r_style ? 150 : 80,
+            height: widget.style == widget.r_style ? 150 : 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                  color: Color(0xFF728873),
+                  width: widget.style == widget.r_style ? 8 : 2
+              ),
+            ),
+            alignment: Alignment.center,
+            child: AnimatedDefaultTextStyle(
+              // 文本样式变化的动画
+              duration: Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              style: TextStyle(
+                fontSize: widget.style == widget.r_style ? 25 : 15,
+                color: Color(0xFF728873),
+              ),
+              child: Text(widget.content.tr),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+
 class Chat_List extends StatefulWidget {
   List<Map<String,String>> History;
   Chat_List({super.key,required this.History});
@@ -409,33 +477,11 @@ class _Chat_ListState extends State<Chat_List> {
               ),),
             ),
             SizedBox(width: 10,),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [Container(
-                height:30, width: 30,
-                child:Image.asset("images/221.png")
-              )],
-            )
           ]:[
             Container(
-              height:chatHistory[index]['content']!.length*2+0.1>80?chatHistory[index]['content']!.length*2+15.1:80,
+              height:chatHistory[index]['content']!.length*2+0.1>80?chatHistory[index]['content']!.length*1.1+15.1:80,
               child: Row(
                 children: [
-                  Column(
-                    children: [
-                      Container(
-                          alignment: Alignment.topCenter,
-                          width: 50,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [Container(
-                                height:30, width: 30,
-                                child:Image.asset("images/robot.png")
-                            )],
-                          )
-                      ),
-                    ],
-                  ),
                   SizedBox(width: 10,),
                   Container(
                     decoration: BoxDecoration(
@@ -443,7 +489,7 @@ class _Chat_ListState extends State<Chat_List> {
                       color:Color(0x5EAEAEAE),
                     ),
                     padding: EdgeInsets.only(left: 10,right: 10),
-                    width: 230,
+                    width: 280,
                     child: Column(
                       children: [
                         Expanded(child: Container(
@@ -463,12 +509,7 @@ class _Chat_ListState extends State<Chat_List> {
                                 print('点击了链接: $href');
                               }
                             },
-                          )/*Text(chatHistory[index]["content"].toString())*//*RichText(
-                              text: TextSpan(
-                                style: TextStyle(fontSize: 16),
-                                children: parseMarkdownText(formatText(chatHistory[index]["content"].toString())),
-                              )
-                          )*/
+                          )
                         ),),
                       ],
                     ),
@@ -500,54 +541,9 @@ class _Chat_ListState extends State<Chat_List> {
     }
   }
   String formatText(String originalText) {
-    // 先将连续的多个换行符（比如 \n\n 等）替换为单个换行符，再去掉可能多余的首尾换行
     return originalText
-        .replaceAll(r'\n', '\n');    // 将 "\n" 转换为实际换行符
+        .replaceAll(r'\n', '\n');
   }
-  /*String formatText(String originalText) {
-    // 先将连续的多个换行符（比如 \n\n 等）替换为单个换行符，再去掉可能多余的首尾换行
-    return originalText
-        .replaceAll(r'\n', '\n')    // 将 "\n" 转换为实际换行符
-        .replaceAll(r'\\n', r'\n'); // 处理可能的双反斜杠转义
-  }
-  List<TextSpan> parseMarkdownText(String text) {
-    final List<TextSpan> spans = [];
-    final RegExp boldRegex = RegExp(r'\*\*(.*?)\*\*');
-
-    int start = 0;
-    for (Match match in boldRegex.allMatches(text)) {
-      // 添加普通文本
-      spans.add(TextSpan(
-        text: text.substring(start, match.start),
-        style: TextStyle(
-            color: Colors.black
-        )
-      ));
-
-      // 添加加粗文本
-      spans.add(TextSpan(
-        text: match.group(1)!,
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-          color: Colors.black
-        ),
-      ));
-
-      start = match.end;
-    }
-
-    // 添加剩余文本
-    if (start < text.length) {
-      spans.add(TextSpan(
-          text: text.substring(start),
-        style: TextStyle(
-            color: Colors.black
-        )
-      ));
-    }
-
-    return spans;
-  }*/
 }
 
 

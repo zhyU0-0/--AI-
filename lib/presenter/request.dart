@@ -11,7 +11,7 @@ class AIService{
   static String chat_api = '/chat/completions';
   List<Map<String,String>> message_history = [];
   AIService(){
-    //String o_str = "{\"id\":\"ea274062-cca8-428d-b069-fd65c07b5343\",\"object\":\"chat.completion\",\"created\":1754359388,\"model\":\"deepseek-chat\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```c\n#include <stdio.h>\n\nint main() {\n    printf(\"你会\\n\");\n    return 0;\n}\n```\"},\"logprobs\":null,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":14,\"completion_tokens\":25,\"total_tokens\":39,\"prompt_tokens_details\":{\"cached_tokens},\"prompt_cache_hit_tokens\":0,\"prompt_cache_miss_tokens\":14},\"system_fingerprint\":\"fp_8802369eaa_prod0623_fp8_kvcache\"}";
+    //String o_str = "{\"id\":\"PcbOyL2YrvlNlwwkLirnV0GLBpFQPAj6_ea274062-cca8-428d-b069-fd65c07b5343\",\"object\":\"chat.completion\",\"created\":1754359388,\"model\":\"deepseek-chat\",\"choices\":[{\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"```c\n#include <stdio.h>\n\nint main() {\n    printf(\"你会\\n\");\n    return 0;\n}\n```\"},\"logprobs\":null,\"finish_reason\":\"stop\"}],\"usage\":{\"prompt_tokens\":14,\"completion_tokens\":25,\"total_tokens\":39,\"prompt_tokens_details\":{\"cached_tokens},\"prompt_cache_hit_tokens\":0,\"prompt_cache_miss_tokens\":14},\"system_fingerprint\":\"fp_8802369eaa_prod0623_fp8_kvcache\"}";
     init();
     const apiKey = String.fromEnvironment('ARK_API_KEY');
     logger.d('API Key: $apiKey');

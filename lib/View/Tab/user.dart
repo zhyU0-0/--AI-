@@ -36,15 +36,26 @@ class _User_pageState extends State<User_page> {
                   children: [
                     Column(
                       children: [
-                        SizedBox(height: 50,),
+                        SizedBox(height: 40,),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text("用户界面",style: TextStyle(
+                                color: Color(0xFF5D705E),
+                                fontSize: 20
+                            ),),
+                          ],
+                        ),
+                        SizedBox(height: 20,),
                         UserLanding(),
                         SizedBox(height: 30,),
                         dataShow(),
-
                       ],
                     ),
                     Container(
-                        height: 400,
+                        height: 350,
                         child: ListView(
                       children: [
                         ListTile(
@@ -225,27 +236,7 @@ class _UserLandingState extends State<UserLanding> {
 
   }
   init()async{
-    /*final prefs = await SharedPreferences.getInstance();
-    var a = (await prefs.getBool("is_land"))??false;
-    email = await prefs.getString("user_email")??"";
-    var ip = await prefs.getString("ip")??"";
-    setState(() {
-      is_landing = a;
-    });
-    logger.d("ip ::: "+ip+"  "+email);
-    final response = await http.get(
-        Uri.parse("${ip}/get_user_by_email?email=${email}"),
-        headers:{'Content-Type': 'application/json'},
-    );
-    logger.d(response.body);
-    final decodedData = utf8.decode(response.bodyBytes);
-    final jsonMap = json.decode(decodedData) as Map<String, dynamic>;
-    final message = jsonMap['message'] as List<dynamic>;
-    setState(() {
-      image = message[4] == "0" ? message[4] + ".png":message[4] + ".jpg" ;
-      user_name = message[1].toString();
-    });
-    logger.d("image::"+image+user_name);*/
+
     final prefs = await SharedPreferences.getInstance();
     var a = (await prefs.getBool("is_land"))??false;
     var _image = "";
@@ -269,7 +260,7 @@ class _UserLandingState extends State<UserLanding> {
   Widget build(BuildContext context) {
     return Container(
       width: 370,
-      height: 120,
+      height: 100,
       alignment: Alignment.center,
       decoration: BoxDecoration(borderRadius:BorderRadius.circular(10),
           border:Border.all(
@@ -303,11 +294,14 @@ class _UserLandingState extends State<UserLanding> {
                     ],
                   ),
 
-                  Row(
-                    children: [
-                      Text("userName".tr+":",style: TextStyle(fontSize: 1)),
-                      Text(user_name,style: TextStyle(fontSize: 20))
-                    ],
+                  Container(
+                      width: 150,
+                      child: Row(
+                        children: [
+                          Text("username".tr+":",style: TextStyle(fontSize: 10)),
+                          Text(user_name,style: TextStyle(fontSize: 20))
+                        ],
+                      )
                   ),
 
                   IconButton(onPressed: (){
