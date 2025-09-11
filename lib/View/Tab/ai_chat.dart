@@ -482,58 +482,39 @@ class _Chat_ListState extends State<Chat_List> {
           mainAxisAlignment:chatHistory[index]["role"].toString()=="user"? MainAxisAlignment.end:MainAxisAlignment.start,
           children:chatHistory[index]["role"].toString() == "user"? [
             Container(
-              decoration: BoxDecoration(
-                color: Color(0xA55B8060),
-                borderRadius: BorderRadius.circular(10)
+              constraints: BoxConstraints(
+                maxWidth: 320, // 最宽宽度
               ),
               padding: EdgeInsets.all(10),
-              alignment: Alignment.center,
-              width: (chatHistory[index]["content"]!.length)*30<200?
-              (chatHistory[index]["content"]!.length)*30 : 200,
-              child: Text(chatHistory[index]["content"].toString(),style: TextStyle(
-                fontSize: 15
-              ),),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color:Color(0xA55B8060),
+              ),
+              child: MarkdownBody(
+                data: formatText(chatHistory[index]["content"].toString()),
+                styleSheet: MarkdownStyleSheet(
+                  h1: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  h2: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
             SizedBox(width: 10,),
           ]:[
             Container(
-              height:chatHistory[index]['content']!.length*2+0.1>80?chatHistory[index]['content']!.length*1.1+15.1:80,
-              child: Row(
-                children: [
-                  SizedBox(width: 10,),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color:Color(0x5EAEAEAE),
-                    ),
-                    padding: EdgeInsets.only(left: 10,right: 10),
-                    width: 280,
-                    child: Column(
-                      children: [
-                        Expanded(child: Container(
-                          alignment: Alignment.centerLeft,
-                          child:Markdown(
-                            data: formatText(chatHistory[index]["content"].toString()),
-                            // 可以自定义样式
-                            styleSheet: MarkdownStyleSheet(
-                              h1: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                              h2: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              // 其他样式设置...
-                            ),
-                            // 处理链接点击
-                            onTapLink: (text, href, title) {
-                              if (href != null) {
-                                // 在这里处理链接点击事件，例如使用url_launcher打开链接
-                                print('点击了链接: $href');
-                              }
-                            },
-                          )
-                        ),),
-                      ],
-                    ),
-                  ),
-
-                ],
+              constraints: BoxConstraints(
+                maxWidth: 320, // 最宽宽度
+              ),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color:Color(0x5EAEAEAE),
+              ),
+              child: MarkdownBody(
+                data: formatText(chatHistory[index]["content"].toString()),
+                styleSheet: MarkdownStyleSheet(
+                  h1: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  h2: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],

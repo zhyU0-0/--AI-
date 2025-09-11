@@ -34,14 +34,14 @@ dependencies:
   shared_preferences: 2.4.0
   get: ^4.6.5
   logger: ^1.4.0
-  image_picker: ^1.0.4    # 选择相册照片
-  path_provider: ^2.0.11  # 获取应用目录
-  path: ^1.8.2           # 路径处理
-  sqflite: ^2.2.8        # SQLite数据库
-  intl: ^0.18.1          # 日期格式化
+  image_picker: ^1.0.4
+  path_provider: ^2.0.11
+  path: ^1.8.2
+  sqflite: ^2.2.8
+  intl: ^0.18.1
   crypto: ^3.0.3
   record: ^4.0.0
-  permission_handler: ^12.0.0+1   # 权限处理
+  permission_handler: ^12.0.0+1
   web_socket_channel: ^2.4.0
   fl_chart: ^0.71.0
   dotenv: ^4.2.0
