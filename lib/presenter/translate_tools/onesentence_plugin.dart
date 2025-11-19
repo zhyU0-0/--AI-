@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:summer_assessment/key.dart';
 
 class OneSentenceASRParams {
   static const String ENGINE_8K_ZH = "8k_zh";
@@ -60,9 +61,9 @@ class OneSentenceASRParams {
   static const int REINFORCE_HOTWORD_MODE_1 = 1;
 
   String secretID =
-      ""; // 腾讯云 secretID, 相关信息可在https://console.cloud.tencent.com/cam/capiAKIDHRQBpKcJp79wXt1wd7NQEo9GBsOBua4U查询
+      KeyData().TXsecretID; // 腾讯云 secretID, 相关信息可在https://console.cloud.tencent.com/cam/capi查询
   String secretKey =
-      ""; // 腾讯云 secretKey, 相关信息可在https://console.cloud.tencent.com/cam/PcbOyL2YrvlNlwwkLirnV0GLBpFQPAj6capi查询
+      KeyData().TXsecretKey; // 腾讯云 secretKey, 相关信息可在https://console.cloud.tencent.com/cam/capi查询
   String?
       token; // 腾讯云 Token, 相关信息可在https://console.cloud.tencent.com/cam/capi查询
 

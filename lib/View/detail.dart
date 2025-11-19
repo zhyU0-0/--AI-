@@ -243,7 +243,8 @@ class _UserListState extends State<UserList> {
   }
   init()async{
     final p = await SharedPreferences.getInstance();
-    var aa = await p.getBool("is_land") ?? false; // 添加默认值
+    var aa = await p.getBool("is_landing") ?? false; // 添加默认值
+    logger.d(aa.toString());
     setState(() {
       is_land = aa;
     });
@@ -431,7 +432,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
   }
   init()async{
     final p = await SharedPreferences.getInstance();
-    var aa = await p.getBool("is_land") ?? false;
+    var aa = await p.getBool("is_landing") ?? false;
     var name = p.getString("user_name")??"";
     var v = await DatabaseService.instance.getUser(name);
     setState(() {

@@ -318,7 +318,15 @@ class _AIChat_pageState extends State<AIChat_page> {
                     onPressed: chat,
                     backgroundColor: send_color,
                     mini: true,
-                    child: const Icon(Icons.send, size: 20,color: Color(0xFFE8E6E0)),
+                    child: _isRequseting?Container(
+                      width: 25,
+                    height: 25,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 4,
+                      backgroundColor: Color(0xFFE8E6E0),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF637864)), // 进度颜色
+                    ),
+                    ):Icon(Icons.send, size: 20,color: Color(0xFFE8E6E0)),
                   ),
                 ],
               ),

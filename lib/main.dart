@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
       translations: Message(),
       locale: Locale("zh","CN"),
       fallbackLocale: Locale("en","US"),
-      home: landing?MyHomePage():Land(),
+      home: landing?MyHomePage():Login(),
     );
   }
 }

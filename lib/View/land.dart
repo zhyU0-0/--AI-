@@ -9,14 +9,14 @@ import 'package:summer_assessment/model/DataBase.dart';
 
 var logger = Logger();
 
-class Land extends StatefulWidget {
-  const Land({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<Land> createState() => _LandState();
+  State<Login> createState() => _LoginState();
 }
 
-class _LandState extends State<Land> {
+class _LoginState extends State<Login> {
   TextEditingController pass_word = new TextEditingController();
   TextEditingController user_name = new TextEditingController();
   bool is_auth = false;
@@ -160,7 +160,7 @@ class _LandState extends State<Land> {
         duration: Duration(seconds: 1),
         backgroundColor: Colors.green,
       ));
-      Get.toNamed("/home");
+      Get.offAllNamed("/home");
     }else {
       Get.showSnackbar(GetSnackBar(
           message:"登陆失败，或密码错误",
